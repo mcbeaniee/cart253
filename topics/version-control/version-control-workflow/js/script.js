@@ -1,15 +1,15 @@
 /**
- * Title of Project
- * Author Name
+ * Jack's version control project
+ * Jack McDonald
  * 
- * HOW EMBARRASSING! I HAVE NO DESCRIPTION OF MY PROJECT!
- * PLEASE REMOVE A GRADE FROM MY WORK IF IT'S GRADED!
+ * 
+ * Testing out version control and stuff in p5.js
  */
 
 "use strict";
 
 /**
- * OH LOOK I DIDN'T DESCRIBE SETUP!!
+ * Sets up rules before running draw function.
 */
 function setup() {
 
@@ -17,7 +17,7 @@ function setup() {
 
 
 /**
- * OOPS I DIDN'T DESCRIBE WHAT MY DRAW DOES!
+ * draws pixels on the screen according to the code in the function.
 */
 function draw() {
 
