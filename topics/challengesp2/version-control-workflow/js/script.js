@@ -40,18 +40,25 @@ function drawFlag() {
     pop();
 }
 */
+function drawChain(){
+    push();
+    strokeWeight(20);
+    stroke("#000000");
+    noFill();
+    ellipse(250,0,50,[100]);
+    ellipse(250,70,50,[100]);
+    ellipse(250,140,50,[100]);
+    ellipse(250,220,50,[100]);
+    ellipse(250,290,50,[100]);
+    ellipse(250,360,50,[100]);
+    ellipse(250,430,50,[100]);
+    ellipse(250,500,50,[100]);
+    pop();
+}
+
 function draw(){
     //draws yellow background
     background("#ffff00");
     //ellipse chains
     drawChain();
-}
-
-function drawChain(){
-    push();
-    strokeWeight(10);
-    stroke("#000000");
-    fill("#ffff00");
-    ellipse(100,100,100,[300]);
-    pop();
 }
