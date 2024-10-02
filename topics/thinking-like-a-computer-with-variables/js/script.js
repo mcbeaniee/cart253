@@ -49,7 +49,7 @@ function draw() {
   randomShake.x1 = constrain[randomShake.x1,199,190]
   randomShake.x2 +=1;
   randomShake.x2 = constrain[randomShake.x2,201,210]
-  mrFurious.x = random(randomShake.x1,randomShake.x2)
+  
   // Draw Mr. Furious as a coloured circle
   push();
   noStroke();
