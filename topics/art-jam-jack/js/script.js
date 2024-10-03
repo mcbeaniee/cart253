@@ -13,9 +13,11 @@
 
 let gif;
 let img;
+let backgroundimg;
 
 function preload() {
     gif = loadImage('assets/images/Unattended.gif');
+    backgroundimg = loadImage('assets/images/catclockbackground.png')
   }
 
 //Iris var
@@ -45,6 +47,7 @@ let pendulumY = 0;
 function setup() {
     createCanvas(1000,1000);
     
+    
     let radius = 100;
     clock.minutesRadius = radius * 0.71;
     clock.hoursRadius = radius * 0.5;
@@ -55,10 +58,9 @@ function setup() {
  * Draws the cats and their features
 */
 function draw() {
-    
-    
     noStroke();
-    background("#382b52");
+    //background("#382b52");
+    /** 
     push();
     //cat bodies
     fill(0);
@@ -79,7 +81,9 @@ function draw() {
     triangle(550, 40, 572, 180, 692, 120);
     triangle(825, 40, 811, 180, 692, 120);
     pop();
-    //iris loop
+    */
+    image(backgroundimg,0,0);
+    //irises
     push();
     drawIrises();
     drawIrises2();
@@ -163,20 +167,22 @@ function drawClocks(){
     strokeWeight(4);
     rotate(hourAngle);
     line(0, 0, 0, -clock.hoursRadius);
+    translate(700,465); 
     pop();
 
 
-    //minute hand1
+    //minute hand2
     push();
     translate(700,465);
     strokeWeight(2);
     rotate(minuteAngle);
     line(0, 0, 0, -clock.minutesRadius);
     pop();
+    
 
-    //hour hand1
+    //hour hand2
     push();
-    translate(700,465);
+    translate(700,465);  
     strokeWeight(4);
     rotate(hourAngle);
     line(0, 0, 0, -clock.hoursRadius);
