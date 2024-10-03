@@ -14,10 +14,16 @@
 let gif;
 let img;
 let backgroundimg;
+let eyeball;
+let cat1;
+let cat2;
 
 function preload() {
     gif = loadImage('assets/images/Unattended.gif');
-    backgroundimg = loadImage('assets/images/catclockbackground.png')
+    backgroundimg = loadImage('assets/images/catclockbackground.png');
+    cat1 = loadImage('assets/images/cat1.png');
+    cat2 = loadImage('assets/images/cat2.png');
+    eyeball = loadImage('assets/images/eyeball.png');
   }
 
 //Iris var
@@ -58,7 +64,10 @@ function setup() {
  * Draws the cats and their features
 */
 function draw() {
-    noStroke();
+    push();
+    image(cat1,0,0);
+    image(cat2,0,0);
+    pop();
     //background("#382b52");
     /** 
     push();
@@ -104,15 +113,8 @@ function drawIrises(){
 let eyeX = constrain(mouseX, irisPosition.x, irisPosition.y);
 let eyeY = constrain(mouseY, irisPosition.x, irisPosition.y);
 push();
-fill(255);
-noStroke();
-//whites
-circle(irisPosition.x+35,irisPosition.y-25,120);
-circle(irisPosition.x+125,irisPosition.y-25,120);
-//pupils/irises
-fill(255,0,0);
-circle(eyeX,eyeY,50);
-circle(eyeX+100,eyeY,50);
+image(eyeball,eyeX,eyeY);
+image(eyeball,eyeX+100,eyeY);
 pop();
 }
 
@@ -124,15 +126,9 @@ function drawIrises2(){
     let eyeX2 = constrain(mouseX-400, irisPosition.x, irisPosition.y);
     let eyeY2 = constrain(mouseY, irisPosition.x, irisPosition.y);
     push();
-    fill(255);
-    noStroke();
-    //whites
-    circle(irisPosition.x+435,irisPosition.y-25,120);
-    circle(irisPosition.x+525,irisPosition.y-25,120);
-    //pupils/irises
-    fill(255,0,0);
-    circle(eyeX2+400,eyeY2,50);
-    circle(eyeX2+500,eyeY2,50);
+    //eyeballs
+    image(eyeball,eyeX2+400,eyeY2);
+    image(eyeball,eyeX2+500,eyeY2);
     pop();
 }
 
