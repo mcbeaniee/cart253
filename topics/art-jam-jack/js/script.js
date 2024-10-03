@@ -28,8 +28,8 @@ function preload() {
 
 //Iris var
 let irisPosition = {
-    x: 170,
-    y: 230
+    x: 175,
+    y: 205
 }
 
 //clock vars
@@ -64,34 +64,11 @@ function setup() {
  * Draws the cats and their features
 */
 function draw() {
-    push();
-    image(cat1,0,0);
-    image(cat2,0,0);
-    pop();
     //background("#382b52");
-    /** 
-    push();
-    //cat bodies
-    fill(0);
-    rect(200,300,200,300);
-    rect(600,300,200,300);
-    pop();
-    //cat heads
-    push();
-    fill(0);
-    ellipse(300,250,370,250);
-    ellipse(700,250,370,250);
-    pop();
-    //ears
-    push();
-    fill(0);
-    triangle(150, 40, 172, 180, 292, 120);
-    triangle(425, 40, 411, 180, 292, 120);
-    triangle(550, 40, 572, 180, 692, 120);
-    triangle(825, 40, 811, 180, 692, 120);
-    pop();
-    */
     image(backgroundimg,0,0);
+    //cats
+    image(cat1,55,50);
+    image(cat2,465,60);
     //irises
     push();
     drawIrises();
@@ -114,7 +91,7 @@ let eyeX = constrain(mouseX, irisPosition.x, irisPosition.y);
 let eyeY = constrain(mouseY, irisPosition.x, irisPosition.y);
 push();
 image(eyeball,eyeX,eyeY);
-image(eyeball,eyeX+100,eyeY);
+image(eyeball,eyeX+160,eyeY);
 pop();
 }
 
@@ -127,8 +104,8 @@ function drawIrises2(){
     let eyeY2 = constrain(mouseY, irisPosition.x, irisPosition.y);
     push();
     //eyeballs
-    image(eyeball,eyeX2+400,eyeY2);
-    image(eyeball,eyeX2+500,eyeY2);
+    image(eyeball,eyeX2+380,eyeY2);
+    image(eyeball,eyeX2+558,eyeY2);
     pop();
 }
 
@@ -136,13 +113,6 @@ function drawIrises2(){
 function drawClocks(){
     
     angleMode(DEGREES);
-    //draws clock background
-    noStroke();
-    fill(255);
-    ellipse(300,465,clock.diameter,clock.diameter);
-    ellipse(700,465,clock.diameter,clock.diameter);
-
-
     //angle for hands
     let minuteAngle=map(minute(),0,60,0,360);
     let hourAngle=map(hour(),0,12,0,360);
@@ -193,10 +163,12 @@ function drawPendulums(){
     push();
     strokeWeight(20);
     fill(0);
-    stroke(0);
-    line(300,400, 250 + pendulumX, 700 + pendulumY);
-    line(700,400, 650 + pendulumX, 700 + pendulumY);
-    ellipse(250 + pendulumX, 700 + pendulumY, 30,30);
-    ellipse(650 + pendulumX, 700 + pendulumY, 30,30);
+    stroke(14,20,52);
+    line(300,615, 250 + pendulumX, 800 + pendulumY);
+    stroke(45,25,52);
+    line(700,615, 650 + pendulumX, 800 + pendulumY);
+    noStroke();
+    ellipse(250 + pendulumX, 800 + pendulumY, 30,30);
+    ellipse(650 + pendulumX, 800 + pendulumY, 30,30);
     pop();
 }
