@@ -5,12 +5,14 @@
  * https://editor.p5js.org/aferriss/sketches/S1IygsgyQ
  * help for clock:
  * https://p5js.org/examples/calculating-values-clock/ 
+ * Assets created in Aesprite.
  * 
  * Some cute cat clocks! Definitely normal ones!
  */
 
 "use strict";
 
+//image lets
 let gif;
 let img;
 let backgroundimg;
@@ -18,6 +20,7 @@ let eyeball;
 let cat1;
 let cat2;
 
+//preload images
 function preload() {
     gif = loadImage('assets/images/Unattended.gif');
     backgroundimg = loadImage('assets/images/catclockbackground.png');
@@ -156,6 +159,7 @@ function drawClocks(){
 
 }
 
+//function to draw pendulums
 function drawPendulums(){
     angleMode(RADIANS);
     pendulumX = sin(frameCount/50)*100;
@@ -163,8 +167,10 @@ function drawPendulums(){
     push();
     strokeWeight(20);
     fill(0);
+    //pendulum 1
     stroke(14,20,52);
     line(300,615, 250 + pendulumX, 800 + pendulumY);
+    //pendulum 2
     stroke(45,25,52);
     line(700,615, 650 + pendulumX, 800 + pendulumY);
     noStroke();
