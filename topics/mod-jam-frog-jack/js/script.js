@@ -34,30 +34,35 @@ const frog = {
     }
 };
 
-frog.tongue.y = frog.body.y;
+let pushCounter = 0;
 
 // Our fly
 // Has a position, size, and speed of horizontal movement
-const fly = {
-    x: 0,
-    y: 200, // Will be random
-    size: 10,
-    speed: 3
-};
+class fly{
+    constructor(speed){
+        this.x = 0;
+        this.y = 600;
+        this.speed = speed;
+        this.size = 20;
+    }
+}
+
+let flies = [] 
 
 /**
  * Creates the canvas and initializes the fly
  */
 function setup() {
     createCanvas(640, 480);
-
+    pushFly();
     // Give the fly its first random position
-    resetFly();
+    resetFly(fly);
 }
 
 function draw() {
     background("#87ceeb");
     moveFly();
+    pushFly();
     drawFly();
     moveFrog();
     moveTongue();
@@ -65,36 +70,48 @@ function draw() {
     checkTongueFlyOverlap();
 }
 
+
 /**
  * Moves the fly according to its speed
  * Resets the fly if it gets all the way to the right
  */
 function moveFly() {
     // Move the fly
+    flies.forEach(fly => {
     fly.x += fly.speed;
     // Handle the fly going off the canvas
     if (fly.x > width) {
-        resetFly();
+        resetFly(fly);
     }
+})
 }
 
+function pushFly(){
+    if (pushCounter <= 10){
+    flies.push(new fly(random(1,5)));
+    pushCounter += 1;
+    }
+
+}
 /**
  * Draws the fly as a black circle
  */
 function drawFly() {
+    flies.forEach(fly => {
     push();
     noStroke();
     fill("#000000");
     ellipse(fly.x, fly.y, fly.size);
     pop();
+    })
 }
 
 /**
  * Resets the fly to the left with a random y
  */
-function resetFly() {
+function resetFly(fly) {
     fly.x = 0;
-    fly.y = random(0, 300);
+    fly.y = random(0, 480);
 }
 
 /**
@@ -126,6 +143,8 @@ function moveTongue() {
     frog.tongue.x = mouseX;
     // If the tongue is idle, it doesn't do anything
     if (frog.tongue.state === "idle") {
+        frog.tongue.x = frog.body.x;
+        frog.tongue.y = frog.body.y;
         // Do nothing
     }
     // If the tongue is outbound, it moves up
@@ -133,17 +152,19 @@ function moveTongue() {
         frog.tongue.y = mouseY;
         // The tongue bounces back if it hits the top
         if (frog.tongue.y <= 0) {
-            frog.tongue.state = "inbound";
+            frog.tongue.state = "inboud";
         }
     }
+    
     // If the tongue is inbound, it moves down
     else if (frog.tongue.state === "inbound") {
-        frog.tongue.y += frog.tongue.speed;
+        frog.tongue.state = "idle";
         // The tongue stops if it hits the bottom
         if (frog.tongue.y >= height) {
             frog.tongue.state = "idle";
         }
     }
+       
 }
 
 /**
@@ -176,16 +197,18 @@ function drawFrog() {
  * Handles the tongue overlapping the fly
  */
 function checkTongueFlyOverlap() {
+    flies.forEach(fly => {
     // Get distance from tongue to fly
     const d = dist(frog.tongue.x, frog.tongue.y, fly.x, fly.y);
     // Check if it's an overlap
     const eaten = (d < frog.tongue.size/2 + fly.size/2);
     if (eaten) {
         // Reset the fly
-        resetFly();
+        resetFly(fly);
         // Bring back the tongue
         frog.tongue.state = "inbound";
     }
+})
 }
 
 /**
