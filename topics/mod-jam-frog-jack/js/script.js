@@ -18,6 +18,7 @@
 //defines gamestate variable and asset images
 let gameState;
 let score = 0;
+let highScore = 0;
 
 // Our frog
 const frog = {
@@ -37,6 +38,11 @@ const frog = {
         state: "idle" // State can be: idle, outbound, inbound
     }
 };
+
+const titleCard = {
+    state: "shown",
+    text: "QUICK! ABANDON YOUR CHILDREN!"
+}
 
 //gamestate constant
 const gamePlaying = 1;
@@ -62,21 +68,27 @@ let flies = []
  * Creates the canvas and initializes the fly
  */
 function setup() {
+    
     gameState = gamePlaying;
     createCanvas(640, 480);
     pushFly();
     // Give the fly its first random position
     resetFly(fly);
+    titleCard.state = "shown";
 }
 
 function draw() {
     
     switch (gameState){
     case gamePlaying:
-        background("#87ceeb");
+    if (titleCard.state = "shown"){
+        text(" " + titleCard.text,190,210);
+    }
+    background("#87ceeb");
     scorePoints();
     push();
-    text("Score:" + score, 30,30);
+    text("Score: " + score, 30,30);
+    text("High score: " + highScore, 30,60);
     pop();
     moveFly();
     pushFly();
@@ -86,13 +98,10 @@ function draw() {
     drawFrog();
     checkTongueFlyOverlap();
     checkFrogCollision();
+    highScoreCounter();
     
     break;
     case gameOver:
-    push();
-    text("you lost custody",320,240);
-    text("presss zed to restart",320,340);
-    pop();
     break;
     }
 }
@@ -267,6 +276,22 @@ function mousePressed() {
     }
 }
 
+function highScoreCounter() {
+    if (score>highScore && gameState===gameOver){
+        highScore = score;
+        text("Congratulations! you did not abandon your kids!",190,160);
+        text("Unfortunately, you lost custody. presss Z to restart",190,210);
+        text("NEW HIGH SCORE!! " + score,255,260);
+    }
+
+    if (score<highScore && gameState===gameOver) {
+        text("Congratulations! you did not abandon your kids!",190,160);
+        text("Unfortunately, you lost custody. presss Z to restart",190,210);
+        text("YOUR SCORE: " + score,255,260);
+
+    }
+}
+
 function keyPressed() {
     if (key === 'z' && gameState === gameOver){
 
@@ -275,7 +300,8 @@ function keyPressed() {
         frog.body.x = 320;
         frog.body.y = 240;
         pushCounter = 0;
-        
+        frog.tongue.state = "idle";
+        titleCard.state = "shown";
         gameState = gamePlaying;
 
     }
