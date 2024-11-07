@@ -1,13 +1,14 @@
 /**
- * Frogfrogfrog
- * Pippin Barr
+ * Frogspawn
+ * Jack McDonald
  * 
- * A game of catching flies with your frog-tongue
+ * A game about avoiding your squabbling frog/fly children.
  * 
  * Instructions:
- * - Move the frog with your mouse
- * - Click to launch the tongue
- * - Catch flies
+ *  - WASD to move
+ *  - click to shoot tongue towards mouse location
+ *  - survive as long as possible
+ *  - get bonus for not eating your children!
  * 
  * Made with p5
  * https://p5js.org/
@@ -53,7 +54,7 @@ const frog = {
     }
 };
 
-//let pushCounter = 0;
+//let pushCounter = 0; a long forgotten variable
 
 // Our fly
 // Has a position, size, and speed of horizontal movement
@@ -96,19 +97,22 @@ function setup() {
 //draws the game based on the gamestate, playing or gameover
 function draw() {
     switch (gameState){
+    //start screen, plays only the first time you open the website.
     case "gameStart":
         background("#87ceeb");
         push();
         fill("#00ff00");
         noStroke();
+        //illusory frog.
         ellipse(frog.body.x, frog.body.y, frog.body.size);
         pop();
         gameStart();
         break;
+    //gamestate while actually playing
     case "gamePlaying":
-        //console.log("hello!");
         gameplay();
         break;
+    //you have died, this gamestate deals with it
     case "gameOver":
         image(endFrame,0,0);
         text(gameOverCongrats,190,160);
@@ -118,6 +122,7 @@ function draw() {
     }
 }
 
+//nested function for all gameplay-related functions called in the gamePlaying gameState
 function gameplay(){
     clearTimeout(timer);
     gameHasStarted=true;
@@ -139,6 +144,7 @@ function gameplay(){
     drawPoisonFly();
 }
 
+//creates the start screen for the game including the frog.
 function gameStart() {
     text("quick! abandon your children!",239,190);
     text("(press any key)",270,300);
@@ -231,7 +237,7 @@ function resetPoisonFly() {
 }
 
 /**
- * Moves the frog to the mouse position on x
+ * Moves the frog using WASD and arrow keys
  */
 function moveFrog() {
     if (keyIsDown(87,UP_ARROW)){
@@ -393,22 +399,26 @@ function mousePressed() {
 
 //shows game over screen and calculates high score
 function highScoreCounter() {
+    //bonus multiplier
     if (hasEaten===false){
         score = score*2
     }
+    //if you scored higher than your previous highscore, set new one
+    //1st is without bonus.
     if (score>highScore && gameState==="gameOver"){
         if (hasEaten===true && gameState==="gameOver"){
             highScore = score
             gameOverScore = "NEW HIGH SCORE: ";
             gameOverBonus = " ";
         }
+
         else {
         highScore=score
         gameOverScore = "NEW HIGH SCORE: "
         }
         
     }
-
+    //no high score and no bonus state
     if (score<highScore && gameState==="gameOver") {
         if (hasEaten===true && gameState==="gameOver"){
             gameOverBonus = " ";
@@ -417,10 +427,10 @@ function highScoreCounter() {
     
 }
 
-//resets the game and all parameters when the frog dies, when zed is pressed
+//resets the game and all parameters when the frog dies, when ZED is pressed
 function keyPressed() {
     if (key === 'z' && gameState === "gameOver"){
-
+        //clears frog array
         flies = [];
         score = 0;
         frog.body.x = 320;
