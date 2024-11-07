@@ -16,9 +16,12 @@
 "use strict";
 
 //defines gamestate variable and asset images
-let gameState;
+let gameState = "gameStart";
 let score = 0;
 let highScore = 0;
+
+//button to say game start blah blah 
+
 
 // Our frog
 const frog = {
@@ -45,8 +48,10 @@ const titleCard = {
 }
 
 //gamestate constant
+/*
 const gamePlaying = 1;
 const gameOver = 2;
+*/
 
 
 let pushCounter = 0;
@@ -62,25 +67,41 @@ class fly{
     }
 }
 
+// Our  evil poison fly
+// Has a position, size, and speed of horizontal movement
+const poisonFly = {
+    x: 0,
+    y: 200, // Will be random
+    size: 10,
+    speed: .7
+};
+
+// all important fly array 
+// "do not touch the gnome he is holding together the fabric of reality" looking ass array
 let flies = [] 
 
 /**
  * Creates the canvas and initializes the fly
  */
 function setup() {
-    
-    gameState = gamePlaying;
+    gameState = "gameStart";
     createCanvas(640, 480);
     pushFly();
     // Give the fly its first random position
     resetFly(fly);
+    //resetFly but for the poison guy
+    resetPoisonFly();
     titleCard.state = "shown";
 }
 
+//draws the game based on the gamestate, playing or gameover
 function draw() {
     
     switch (gameState){
-    case gamePlaying:
+    case "gameStart":
+    gameStart();
+
+    case "gamePlaying":
     if (titleCard.state = "shown"){
         text(" " + titleCard.text,190,210);
     }
@@ -99,11 +120,27 @@ function draw() {
     checkTongueFlyOverlap();
     checkFrogCollision();
     highScoreCounter();
-    
+    movePoisonFly();
+    drawPoisonFly();
     break;
-    case gameOver:
+    case "gameOver":
     break;
     }
+}
+
+
+
+function gameStart() {
+    background("#87ceeb");
+    text("quick abandon your children",200,200);
+
+    if (keyIsPressed){
+        gameState="gamePlaying";
+    }
+    setTimeout(function(){
+        gameState = "gameOver";
+        }, 3000)
+
 }
 
 
@@ -122,6 +159,7 @@ function moveFly() {
 })
 }
 
+//pushes an amount of flies to the array
 function pushFly(){
     if (pushCounter <= 10){
     flies.push(new fly(random(1,5),random(10, 40)));
@@ -151,22 +189,54 @@ function resetFly(fly) {
 }
 
 /**
+ * Moves the fly according to its  slow speed
+ * Resets the fly if it gets all the way to the right
+ */
+function movePoisonFly() {
+    // Move the fly
+    poisonFly.x += poisonFly.speed;
+    // Handle the fly going off the canvas
+    if (poisonFly.x > width) {
+        resetPoisonFly();
+    }
+}
+
+/**
+ * Draws the fly as a fat GREEN circle
+ */
+function drawPoisonFly() {
+    push();
+    noStroke();
+    fill("#000000");
+    ellipse(poisonFly.x, poisonFly.y, poisonFly.size);
+    pop();
+}
+
+/**
+ * Resets the poison fly to the left with a random y
+ */
+function resetPoisonFly() {
+    poisonFly.x = 0;
+    poisonFly.y = random(0, 300);
+}
+
+/**
  * Moves the frog to the mouse position on x
  */
 function moveFrog() {
-    if (keyIsDown(87)){
+    if (keyIsDown(87,UP_ARROW)){
         frog.body.y = frog.body.y  - 5;
     } 
 
-    if (keyIsDown(83)){
+    if (keyIsDown(83,DOWN_ARROW)){
         frog.body.y  = frog.body.y  + 5;
     } 
 
-    if (keyIsDown(65)){
+    if (keyIsDown(65,LEFT_ARROW)){
         frog.body.x= frog.body.x - 5;
     } 
 
-    if (keyIsDown(68)){
+    if (keyIsDown(68,RIGHT_ARROW)){
         frog.body.x= frog.body.x + 5;
     } 
 }
@@ -246,8 +316,17 @@ function checkTongueFlyOverlap() {
         frog.tongue.state = "inbound";
     }
 })
+//poison fly kill functionality 
+const poisonD = dist(frog.tongue.x, frog.tongue.y, poisonFly.x, poisonFly.y);
+// Check if it's an overlap
+const poisonEaten = (poisonD < frog.tongue.size/2 + fly.size/2);
+if (poisonEaten) {
+    //kills the frog
+    gameState = "gameOver";
+}
 }
 
+//adds to the score as you survive
 function scorePoints(){
     score += 1;
 }
@@ -257,14 +336,23 @@ function checkFrogCollision() {
     flies.forEach(fly =>{
         //get distance from frog body position
         const frogD = dist(frog.body.x, frog.body.y, fly.x, fly.y);
+        
         //check if touching fly
-        const dead = (frogD<50);
+        const dead = (frogD<50 );
         if (dead) {
             //game over
-            gameState = gameOver;
+            gameState = "gameOver";
         }
 
     })
+    //poison fly touch logic (same as other)
+    const poisonFrogD = dist(frog.body.x, frog.body.y, poisonFly.x, poisonFly.y);
+    //kills if touching poison fly
+    const poisonDead = (poisonFrogD<50 );
+        if (poisonDead) {
+            //game over
+            gameState = "gameOver";
+        }
 }
 
 /**
@@ -276,15 +364,16 @@ function mousePressed() {
     }
 }
 
+//shows game over screen and calculates high score
 function highScoreCounter() {
-    if (score>highScore && gameState===gameOver){
+    if (score>highScore && gameState==="gameOver"){
         highScore = score;
         text("Congratulations! you did not abandon your kids!",190,160);
         text("Unfortunately, you lost custody. presss Z to restart",190,210);
         text("NEW HIGH SCORE!! " + score,255,260);
     }
 
-    if (score<highScore && gameState===gameOver) {
+    if (score<highScore && gameState==="gameOver") {
         text("Congratulations! you did not abandon your kids!",190,160);
         text("Unfortunately, you lost custody. presss Z to restart",190,210);
         text("YOUR SCORE: " + score,255,260);
@@ -292,8 +381,9 @@ function highScoreCounter() {
     }
 }
 
+//resets the game and all parameters when the frog dies, when zed is pressed
 function keyPressed() {
-    if (key === 'z' && gameState === gameOver){
+    if (key === 'z' && gameState === "gameOver"){
 
         flies = [];
         score = 0;
@@ -302,7 +392,7 @@ function keyPressed() {
         pushCounter = 0;
         frog.tongue.state = "idle";
         titleCard.state = "shown";
-        gameState = gamePlaying;
+        gameState = "gamePlaying";
 
     }
 }
