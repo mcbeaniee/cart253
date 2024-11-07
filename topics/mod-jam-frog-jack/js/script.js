@@ -26,13 +26,15 @@ const frog = {
     // The frog's tongue has a position, size, speed, and state
     tongue: {
         x: undefined,
-        y: 480,
+        y: undefined,
         size: 20,
         speed: 20,
         // Determines how the tongue moves each frame
         state: "idle" // State can be: idle, outbound, inbound
     }
 };
+
+frog.tongue.y = frog.body.y;
 
 // Our fly
 // Has a position, size, and speed of horizontal movement
@@ -99,7 +101,21 @@ function resetFly() {
  * Moves the frog to the mouse position on x
  */
 function moveFrog() {
-    frog.body.x = mouseX;
+    if (keyIsDown(UP_ARROW)){
+        frog.body.y = frog.body.y  - 5;
+    } 
+
+    if (keyIsDown(DOWN_ARROW)){
+        frog.body.y  = frog.body.y  + 5;
+    } 
+
+    if (keyIsDown(LEFT_ARROW)){
+        frog.body.x= frog.body.x - 5;
+    } 
+
+    if (keyIsDown(RIGHT_ARROW)){
+        frog.body.x= frog.body.x + 5;
+    } 
 }
 
 /**
@@ -107,14 +123,14 @@ function moveFrog() {
  */
 function moveTongue() {
     // Tongue matches the frog's x
-    frog.tongue.x = frog.body.x;
+    frog.tongue.x = mouseX;
     // If the tongue is idle, it doesn't do anything
     if (frog.tongue.state === "idle") {
         // Do nothing
     }
     // If the tongue is outbound, it moves up
     else if (frog.tongue.state === "outbound") {
-        frog.tongue.y += -frog.tongue.speed;
+        frog.tongue.y = mouseY;
         // The tongue bounces back if it hits the top
         if (frog.tongue.y <= 0) {
             frog.tongue.state = "inbound";
