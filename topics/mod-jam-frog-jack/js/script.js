@@ -76,7 +76,7 @@ function draw() {
         background("#87ceeb");
     scorePoints();
     push();
-    text("Score:" + score, 100,100);
+    text("Score:" + score, 30,30);
     pop();
     moveFly();
     pushFly();
@@ -91,7 +91,7 @@ function draw() {
     case gameOver:
     push();
     text("you lost custody",320,240);
-    text("presss space to restart",320,340);
+    text("presss zed to restart",320,340);
     pop();
     break;
     }
@@ -145,19 +145,19 @@ function resetFly(fly) {
  * Moves the frog to the mouse position on x
  */
 function moveFrog() {
-    if (keyIsDown(UP_ARROW)){
+    if (keyIsDown(87)){
         frog.body.y = frog.body.y  - 5;
     } 
 
-    if (keyIsDown(DOWN_ARROW)){
+    if (keyIsDown(83)){
         frog.body.y  = frog.body.y  + 5;
     } 
 
-    if (keyIsDown(LEFT_ARROW)){
+    if (keyIsDown(65)){
         frog.body.x= frog.body.x - 5;
     } 
 
-    if (keyIsDown(RIGHT_ARROW)){
+    if (keyIsDown(68)){
         frog.body.x= frog.body.x + 5;
     } 
 }
@@ -264,5 +264,19 @@ function checkFrogCollision() {
 function mousePressed() {
     if (frog.tongue.state === "idle") {
         frog.tongue.state = "outbound";
+    }
+}
+
+function keyPressed() {
+    if (key === 'z' && gameState === gameOver){
+
+        flies = [];
+        score = 0;
+        frog.body.x = 320;
+        frog.body.y = 240;
+        pushCounter = 0;
+        
+        gameState = gamePlaying;
+
     }
 }
