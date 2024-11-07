@@ -15,13 +15,24 @@
 
 "use strict";
 
-//defines gamestate variable and asset images
+//defines gamestate variable
 let gameState = "gameStart";
+//score and highscore
 let score = 0;
 let highScore = 0;
+//lowkey doesnt do anything anymore
+let timer;
+let gameHasStarted = false;
+//checks if frog has eaten his children
+let hasEaten = false;
+//captures frame for the game over screen
+let endFrame;
 
-//button to say game start blah blah 
-
+//text variables for game over screen
+let gameOverCongrats = "Congratulations! you did not abandon your kids!";
+let gameOverCustody = "Unfortunately, you lost custody. presss Z to restart";
+let gameOverScore = "YOUR SCORE: ";
+let gameOverBonus = " x2 BONUS for not eating your children!";
 
 // Our frog
 const frog = {
@@ -42,19 +53,7 @@ const frog = {
     }
 };
 
-const titleCard = {
-    state: "shown",
-    text: "QUICK! ABANDON YOUR CHILDREN!"
-}
-
-//gamestate constant
-/*
-const gamePlaying = 1;
-const gameOver = 2;
-*/
-
-
-let pushCounter = 0;
+//let pushCounter = 0;
 
 // Our fly
 // Has a position, size, and speed of horizontal movement
@@ -72,7 +71,7 @@ class fly{
 const poisonFly = {
     x: 0,
     y: 200, // Will be random
-    size: 10,
+    size: 40,
     speed: .7
 };
 
@@ -84,27 +83,44 @@ let flies = []
  * Creates the canvas and initializes the fly
  */
 function setup() {
-    gameState = "gameStart";
     createCanvas(640, 480);
     pushFly();
     // Give the fly its first random position
-    resetFly(fly);
+    flies.forEach(fly => {
+        resetFly(fly);
+    });
     //resetFly but for the poison guy
     resetPoisonFly();
-    titleCard.state = "shown";
 }
 
 //draws the game based on the gamestate, playing or gameover
 function draw() {
-    
     switch (gameState){
     case "gameStart":
-    gameStart();
-
+        background("#87ceeb");
+        push();
+        fill("#00ff00");
+        noStroke();
+        ellipse(frog.body.x, frog.body.y, frog.body.size);
+        pop();
+        gameStart();
+        break;
     case "gamePlaying":
-    if (titleCard.state = "shown"){
-        text(" " + titleCard.text,190,210);
+        //console.log("hello!");
+        gameplay();
+        break;
+    case "gameOver":
+        image(endFrame,0,0);
+        text(gameOverCongrats,190,160);
+        text(gameOverCustody,190,210);
+        text(gameOverScore + score + gameOverBonus,255,260);
+    break;
     }
+}
+
+function gameplay(){
+    clearTimeout(timer);
+    gameHasStarted=true;
     background("#87ceeb");
     scorePoints();
     push();
@@ -112,34 +128,30 @@ function draw() {
     text("High score: " + highScore, 30,60);
     pop();
     moveFly();
-    pushFly();
+    //pushFly();
     drawFly();
     moveFrog();
     moveTongue();
     drawFrog();
     checkTongueFlyOverlap();
     checkFrogCollision();
-    highScoreCounter();
     movePoisonFly();
     drawPoisonFly();
-    break;
-    case "gameOver":
-    break;
-    }
 }
 
-
-
 function gameStart() {
-    background("#87ceeb");
-    text("quick abandon your children",200,200);
-
+    text("quick! abandon your children!",239,190);
+    text("(press any key)",270,300);
+    
+    console.log("hello!");
     if (keyIsPressed){
         gameState="gamePlaying";
     }
-    setTimeout(function(){
+    timer=setTimeout(function(){
+        if (gameHasStarted=false){
         gameState = "gameOver";
-        }, 3000)
+        }
+    }, 3000)
 
 }
 
@@ -161,11 +173,9 @@ function moveFly() {
 
 //pushes an amount of flies to the array
 function pushFly(){
-    if (pushCounter <= 10){
+    for (let i = 0; i <=10; i++){
     flies.push(new fly(random(1,5),random(10, 40)));
-    pushCounter += 1;
     }
-
 }
 /**
  * Draws the fly as a black circle
@@ -207,7 +217,7 @@ function movePoisonFly() {
 function drawPoisonFly() {
     push();
     noStroke();
-    fill("#000000");
+    fill("#06902B");
     ellipse(poisonFly.x, poisonFly.y, poisonFly.size);
     pop();
 }
@@ -261,7 +271,6 @@ function moveTongue() {
             frog.tongue.state = "inboud";
         }
     }
-    
     // If the tongue is inbound, it moves down
     else if (frog.tongue.state === "inbound") {
         frog.tongue.state = "idle";
@@ -312,6 +321,7 @@ function checkTongueFlyOverlap() {
         // Reset the fly
         resetFly(fly);
         score = score + 250
+        hasEaten=true;
         // Bring back the tongue
         frog.tongue.state = "inbound";
     }
@@ -319,16 +329,27 @@ function checkTongueFlyOverlap() {
 //poison fly kill functionality 
 const poisonD = dist(frog.tongue.x, frog.tongue.y, poisonFly.x, poisonFly.y);
 // Check if it's an overlap
-const poisonEaten = (poisonD < frog.tongue.size/2 + fly.size/2);
+const poisonEaten = (poisonD < frog.tongue.size/2 + poisonFly.size/2);
 if (poisonEaten) {
     //kills the frog
+    hasEaten = true;
     gameState = "gameOver";
+    highScoreCounter();
+    endFrame = get();
+    gameOverCongrats = "You ate one of your stinky kids and paid the price."
+    gameOverCustody = "You died because that kid was so absolutely pungent!"
 }
 }
 
 //adds to the score as you survive
 function scorePoints(){
+    /*if (hasEaten===false){
+        score += 2;
+    }
+    else {
+    */
     score += 1;
+    
 }
 
 //makeshift collision function for frog bassed on  overlap function
@@ -342,6 +363,8 @@ function checkFrogCollision() {
         if (dead) {
             //game over
             gameState = "gameOver";
+            endFrame = get();
+            highScoreCounter();
         }
 
     })
@@ -351,7 +374,11 @@ function checkFrogCollision() {
     const poisonDead = (poisonFrogD<50 );
         if (poisonDead) {
             //game over
+            gameOverCongrats = "You touched one of your stinky kids and paid the price."
+            gameOverCustody = "You died because that kid was so absolutely pungent!"
             gameState = "gameOver";
+            highScoreCounter();
+            endFrame = get();
         }
 }
 
@@ -366,19 +393,28 @@ function mousePressed() {
 
 //shows game over screen and calculates high score
 function highScoreCounter() {
+    if (hasEaten===false){
+        score = score*2
+    }
     if (score>highScore && gameState==="gameOver"){
-        highScore = score;
-        text("Congratulations! you did not abandon your kids!",190,160);
-        text("Unfortunately, you lost custody. presss Z to restart",190,210);
-        text("NEW HIGH SCORE!! " + score,255,260);
+        if (hasEaten===true && gameState==="gameOver"){
+            highScore = score
+            gameOverScore = "NEW HIGH SCORE: ";
+            gameOverBonus = " ";
+        }
+        else {
+        highScore=score
+        gameOverScore = "NEW HIGH SCORE: "
+        }
+        
     }
 
     if (score<highScore && gameState==="gameOver") {
-        text("Congratulations! you did not abandon your kids!",190,160);
-        text("Unfortunately, you lost custody. presss Z to restart",190,210);
-        text("YOUR SCORE: " + score,255,260);
-
+        if (hasEaten===true && gameState==="gameOver"){
+            gameOverBonus = " ";
+        }
     }
+    
 }
 
 //resets the game and all parameters when the frog dies, when zed is pressed
@@ -389,10 +425,17 @@ function keyPressed() {
         score = 0;
         frog.body.x = 320;
         frog.body.y = 240;
-        pushCounter = 0;
         frog.tongue.state = "idle";
-        titleCard.state = "shown";
+        hasEaten=false;
         gameState = "gamePlaying";
-
+        gameOverScore = "YOUR SCORE: ";
+        gameOverBonus = " x2 BONUS for not eating your children!";
+        gameOverCongrats = "Congratulations! you did not abandon your kids!";
+        gameOverCustody = "Unfortunately, you lost custody. presss Z to restart";
+        pushFly();
+        flies.forEach(fly => {
+            resetFly(fly);
+        });
+        resetPoisonFly();
     }
 }
