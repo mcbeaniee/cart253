@@ -80,22 +80,21 @@ What happens in this project?
     - Move and draw the fly
         - Add the fly's speed to it x
         - Draw a circle at the fly's position with its size (black)
+        - variable sizes and speeds to 
     - Move and draw the frog
-        - Move the frog to the mouse's x position
+        - give frog movement depending on the keypresses of the user
         - Draw a green circle at the frog's position with its size
     - Move and draw the tongue
         - Move the tongue
-            - If the tongue isn't launched, just do nothing... don't draw it
-            - If the tongue is launched, move it up (by its speed)
-            - If the tongue is coming back, move it down (by its speed)
-            - If the tongue hits the top, send it back down
+            - If the tongue is launched, immediately teleport it to the mouse position
+            - If the tongue hits the a fly, send it back immediately
             - If the tongue gets back to the frog, then stop it
         - Draw the tongue
             - Draw a line from the frog to the tongue position
             - Draw a circle at the end of the tongue
     - Check if the tongue hit the fly
         - Check if tongue circle and fly circle overlap
-        - If they do, then reset the fly
+        - If they do, then reset the fly and add to score. 
         - If they don't.... nothing... just keep being a tongue
 
 Events
@@ -103,4 +102,16 @@ Events
 - If the user clicks the mouse
     - If the tongue is still inside the frog's mouth
         - Launch the tongue
+- if the user touches a fly
+    - game over state
+        - calculate score
+        - calculate high score
+        - calculate bonus
+        - provide reset and flavor text
+        - capture background
+- if the user restarts the game
+    - reset game to original state
+    - update high score text and reset variables
+- if the user eats a fly
+    - take away bonus.
 
