@@ -15,13 +15,17 @@
 
 "use strict";
 
+//defines gamestate variable and asset images
+let gameState;
+let score = 0;
+
 // Our frog
 const frog = {
     // The frog's body has a position and size
     body: {
         x: 320,
-        y: 520,
-        size: 150
+        y: 240,
+        size: 80
     },
     // The frog's tongue has a position, size, speed, and state
     tongue: {
@@ -34,16 +38,21 @@ const frog = {
     }
 };
 
+//gamestate constant
+const gamePlaying = 1;
+const gameOver = 2;
+
+
 let pushCounter = 0;
 
 // Our fly
 // Has a position, size, and speed of horizontal movement
 class fly{
-    constructor(speed){
+    constructor(speed,size){
         this.x = 0;
         this.y = 600;
         this.speed = speed;
-        this.size = 20;
+        this.size = size;
     }
 }
 
@@ -53,6 +62,7 @@ let flies = []
  * Creates the canvas and initializes the fly
  */
 function setup() {
+    gameState = gamePlaying;
     createCanvas(640, 480);
     pushFly();
     // Give the fly its first random position
@@ -60,7 +70,14 @@ function setup() {
 }
 
 function draw() {
-    background("#87ceeb");
+    
+    switch (gameState){
+    case gamePlaying:
+        background("#87ceeb");
+    scorePoints();
+    push();
+    text("Score:" + score, 100,100);
+    pop();
     moveFly();
     pushFly();
     drawFly();
@@ -68,6 +85,16 @@ function draw() {
     moveTongue();
     drawFrog();
     checkTongueFlyOverlap();
+    checkFrogCollision();
+    
+    break;
+    case gameOver:
+    push();
+    text("you lost custody",320,240);
+    text("presss space to restart",320,340);
+    pop();
+    break;
+    }
 }
 
 
@@ -88,7 +115,7 @@ function moveFly() {
 
 function pushFly(){
     if (pushCounter <= 10){
-    flies.push(new fly(random(1,5)));
+    flies.push(new fly(random(1,5),random(10, 40)));
     pushCounter += 1;
     }
 
@@ -201,14 +228,34 @@ function checkTongueFlyOverlap() {
     // Get distance from tongue to fly
     const d = dist(frog.tongue.x, frog.tongue.y, fly.x, fly.y);
     // Check if it's an overlap
-    const eaten = (d < frog.tongue.size/2 + fly.size/2);
+    const eaten = (d < 20);
     if (eaten) {
         // Reset the fly
         resetFly(fly);
+        score = score + 250
         // Bring back the tongue
         frog.tongue.state = "inbound";
     }
 })
+}
+
+function scorePoints(){
+    score += 1;
+}
+
+//makeshift collision function for frog bassed on  overlap function
+function checkFrogCollision() {
+    flies.forEach(fly =>{
+        //get distance from frog body position
+        const frogD = dist(frog.body.x, frog.body.y, fly.x, fly.y);
+        //check if touching fly
+        const dead = (frogD<50);
+        if (dead) {
+            //game over
+            gameState = gameOver;
+        }
+
+    })
 }
 
 /**
