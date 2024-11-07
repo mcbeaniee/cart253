@@ -1,24 +1,25 @@
 # Starting points
 
+frog that can move and the tongue goes to where your mouse is, instead of tongue that can move and frog that goes to where your mouse is.
 
-Finding metro tickets on the ground and trying to sell them
+absolute clusterfuck swarm of flies.
 
-**Frog eating flies but it gets harder and harder to catch them**
+different sizes of flies?
 
-Swimming lessons but controlling your body is really hard
+poison flies.
 
-Crossing the street and it’s busy
+random fly patterns
 
-Riding a tricycle but the wheel keeps falling off
+scoreboard based on how long you survive 
 
-Shaving people’s heads in beautiful patterns and showing them at an art gallery
+make frog smaller
 
-Making cups out of clay and seeing what cafe customers say about them
+BREAKTHROUGH: You play as a deadbeat frog father and you are trying to avoid your children. you can stick out your tongue to eat them if they get too close, but don't get attached or you lose (custody)
 
-Growing plants that eat you
+the poison frogspawn are your stinky children they are slower and bigger but can't be eaten 
 
-Keeping a computer mouse as a pet and looking after it
+eating a child gives you points, and surviving longer gives you exponentially more points. 
 
-Rewiring a light
+kind of like asteroid but with a divorced frog father.
 
-Cooking spaghetti with a dog
+make assets depressing as hell if you have time to add them.
