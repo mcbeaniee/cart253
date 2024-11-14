@@ -6,7 +6,7 @@ WASD to move, click to shoot tongue towards your mouse and gobble up those meddl
 
 avoid the stinky ones...
 
-[Play it!](https://pippinbarr.github.io/cart253-examples/topics/making/frogfrogfrog/index.html)
+[Play it!](https://mcbeaniee.github.io/cart253/topics/mod-jam-frog-jack/)
 
 - [Ideas](./ideas.md)
 - [Planning](./planning.md)

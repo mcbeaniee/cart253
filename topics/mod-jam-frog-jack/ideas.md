@@ -23,3 +23,11 @@ eating a child gives you points, and surviving longer gives you exponentially mo
 kind of like asteroid but with a divorced frog father.
 
 make assets depressing as hell if you have time to add them.
+
+make game get more difficult the higher your score is but also make score increase by more the longer you stay alive
+
+"more difficult" = more flies, faster flies, bigger flies, 
+bigger frog?
+
+if you don't eat any of your children you get a score bonus?
+
