@@ -1,15 +1,14 @@
 /**
- * Title of Project
- * Author Name
+ * Fish Go - Variation Jam
+ * Jack McDonald
  * 
- * HOW EMBARRASSING! I HAVE NO DESCRIPTION OF MY PROJECT!
- * PLEASE REMOVE A GRADE FROM MY WORK IF IT'S GRADED!
+ * 3 games about fish! loosely...
  */
 
 "use strict";
 
 /**
- * OH LOOK I DIDN'T DESCRIBE SETUP!!
+ * sets up scene
 */
 function setup() {
 
@@ -17,7 +16,7 @@ function setup() {
 
 
 /**
- * OOPS I DIDN'T DESCRIBE WHAT MY DRAW DOES!
+ * runs functions and draws on the canvas
 */
 function draw() {
 
