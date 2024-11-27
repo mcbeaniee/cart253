@@ -2,7 +2,7 @@
 
 Jack McDonald
 
-[View this project online](https://github.com/mcbeaniee/cart253/tree/main/topics/variation-jam-jack)
+[View this project online](https://mcbeaniee.github.io/cart253/variation-jam-jack)
 
 ## Description
 
