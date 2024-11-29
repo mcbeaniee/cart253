@@ -164,7 +164,7 @@ function gameStart() {
 
 /**
  * Moves the fly according to its speed
- * Resets the fly if it gets all the way to the right
+ * Resets the fly if it gets all the way to the rights
  */
 function moveFly() {
     // Move the fly
