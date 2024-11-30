@@ -16,6 +16,7 @@ let scarcity = 5; //(determines how many fish will be in the water, increases wi
 let gameState = 'fishin';
 let rodUnspooling = false;
 let hookX;
+let hookY;
 
 //rod object, contains hook, line and sink- i mean shaft
 const rod = {
@@ -88,11 +89,6 @@ function keyPressed(){
     if (keyCode===70){
         rodUnspooling=!rodUnspooling;
     }
-    /*if (keyCode===70){
-        if (rodUnspooling===true){
-        rodUnspooling = false;
-        }
-    }*/
 }
 
 //draws assets and objects, as well as pushes array
@@ -128,15 +124,21 @@ function draw() {
 }
 
 function hookCollision(){
-    hookX = constrain(rod.hook.x,350,600)
+    hookX = constrain(rod.hook.x,350,600);
     if (rod.hook.x>=600){
         rod.hook.x=600;
     } else if (rod.hook.x<=350){
         rod.hook.x=350;
     }
+    hookY = constrain(rod.hook.y,300,950);
+    if (rod.hook.y<=300){
+        rod.hook.y=300;
+    } else if (rod.hook.y>=950){
+        rod.hook.y=940;
+    }
 }
 
-//add fish speed to fish x. functionally identical to //moveFly()
+//add fish speed to fish x. functionally identical to moveFly()
 function moveFish() {
     fishies.forEach(fish => {
             fish.x += fish.speed;
@@ -147,7 +149,7 @@ function moveFish() {
     })
     fishies2.forEach(fish2 => {
         fish2.x -= fish2.speed;
-    // Handle the fish going off the canvas
+    // Handle the fish2 going off the canvas
     if (fish2.x < 0) {
         resetFish2(fish2);
     }
@@ -211,7 +213,7 @@ function drawRod() {
     stroke('#000000')
     strokeWeight(1);
     fill("#ffffff");
-    ellipse(hookX,rod.hook.y,rod.hook.size);
+    ellipse(hookX,hookY,rod.hook.size);
     strokeWeight(10);
     stroke('#964B00');
     line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
