@@ -14,7 +14,7 @@ function preload(){
 }
 let scarcity; //(determines how many fish will be in the water, increases with overfishing, resets when fish are sold)
 let gameState = 'fishin';
-let rodUnspooling = 1;
+let rodUnspooling = false;
 
 //rod object, contains hook, line and sink- i mean shaft
 const rod = {
@@ -59,8 +59,19 @@ let fishies = []
 //setup, create canvas, reset/initialize variables
 function setup() {
     createCanvas(1000,1000);
-    rodUnspooling=1;
+    rodUnspooling=false;
     //timetofish();
+}
+
+function keyPressed(){
+    if (keyCode===70){
+        rodUnspooling=!rodUnspooling;
+    }
+    /*if (keyCode===70){
+        if (rodUnspooling===true){
+        rodUnspooling = false;
+        }
+    }*/
 }
 
 //draws assets and objects, as well as pushes array
@@ -89,7 +100,7 @@ function draw() {
             drawFish();
             moveFish();
             drawRod();
-            
+            keyPressed();
             //catchFish();
             break;
     }
@@ -164,21 +175,14 @@ function drawRod() {
     stroke('#964B00');
     line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
     pop();
-    if (rodUnspooling===2){
+    if (rodUnspooling===true){
         rod.hook.y = rod.hook.y +10;
-    }
+    } 
     if (keyIsDown(RIGHT_ARROW)) {
         rod.hook.x= rod.hook.x + 5;
     }
     if (keyIsDown(LEFT_ARROW)) {
         rod.hook.x= rod.hook.x - 5;
-    }
-    if (keyIsDown(70)){
-        if (rodUnspooling===1){
-        rodUnspooling = 2;
-        } else {
-        rodUnspooling = 1;
-        }
     }
     if (keyIsDown(82)){
         rod.hook.y = rod.hook.y -3;
