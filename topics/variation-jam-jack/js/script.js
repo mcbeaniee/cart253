@@ -12,9 +12,10 @@
 function preload(){
 //img()
 }
-let scarcity; //(determines how many fish will be in the water, increases with overfishing, resets when fish are sold)
+let scarcity = 5; //(determines how many fish will be in the water, increases with overfishing, resets when fish are sold)
 let gameState = 'fishin';
 let rodUnspooling = false;
+let hookX;
 
 //rod object, contains hook, line and sink- i mean shaft
 const rod = {
@@ -42,24 +43,44 @@ line:    {
 
 //fish object, to be pushed into an array
 class fish{
-constructor (speed,size,start){
-    this.x = 0; //moves across screen from initated position
-    this.y = 600; //random from surface to floor of screen 
-    this.speed = speed;//random but slow
-    this.size = size;//random 
-    this.value = 0,//ranges depending on different size caps (ex: 1-5 = $10 6-10 = $15 etc)
-    this.start = 1,//randomizes right moving or left moving
-    this.radius = 0//invisible rectangle around fish that is its detection radius, = size * by random number
+    constructor (speed,size){
+        this.x = 0; //moves across screen from initated position
+        this.y = 600; //random from surface to floor of screen 
+        this.speed = speed;//random but slow
+        this.size = size;//random 
+        this.value = 0,//ranges depending on different size caps (ex: 1-5 = $10 6-10 = $15 etc)
+        this.radius = 0//invisible rectangle around fish that is its detection radius, = size * by random number
+    }
 }
+
+class fish2 {
+    constructor (speed,size){
+        this.x = 1000; //moves across screen from initated position
+        this.y = 600; //random from surface to floor of screen 
+        this.speed = speed;//random but slow
+        this.size = size;//random 
+        this.value = 0,//ranges depending on different size caps (ex: 1-5 = $10 6-10 = $15 etc)
+        this.radius = 0//invisible rectangle around fish that is its detection radius, = size * by random number
+    }
 }
 
 //fishies array. yes, i know the plural of fish is fish
 let fishies = []
+let fishies2 = []
 
 //setup, create canvas, reset/initialize variables
 function setup() {
     createCanvas(1000,1000);
     rodUnspooling=false;
+    pushFish();
+    fishies.forEach(fish =>{
+        fish.y = random(340, 1000);
+        fish.x = random(0, 1000)
+    })
+    fishies2.forEach(fish2 =>{
+        fish2.y = random(340, 1000);
+        fish2.x = random(0, 1000)
+    })
     //timetofish();
 }
 
@@ -90,13 +111,13 @@ function draw() {
             break;
         case 'fishin':
             background('#87CEEB');
+            hookCollision();
             push();
             fill('#007BA7');
             rect(0,300,1000,1000);
-            scarcity = 6;
             //img(assets) //backgrounds, player location, and sea floor. as well as moving water sprite.
             resetFish(fish);
-            pushFish();
+            resetFish2(fish2);
             drawFish();
             moveFish();
             drawRod();
@@ -106,39 +127,54 @@ function draw() {
     }
 }
 
+function hookCollision(){
+    hookX = constrain(rod.hook.x,350,600)
+    if (rod.hook.x>=600){
+        rod.hook.x=600;
+    } else if (rod.hook.x<=350){
+        rod.hook.x=350;
+    }
+}
 
 //add fish speed to fish x. functionally identical to //moveFly()
 function moveFish() {
     fishies.forEach(fish => {
-        if(fish.start=1){
             fish.x += fish.speed;
-        } else {
-            fish.x -= fish.speed;
-        }
         // Handle the fish going off the canvas
-        if (fish.start=1 && fish.x > width) {
-            resetFish(fish);
-        } else if (fish.start=2 && fish.x < width) {
+        if (fish.x > width) {
             resetFish(fish);
         }
     })
+    fishies2.forEach(fish2 => {
+        fish2.x -= fish2.speed;
+    // Handle the fish going off the canvas
+    if (fish2.x < 0) {
+        resetFish2(fish2);
+    }
+})
 }
+
 
 //pushes new fish to array, up to a limit of the current scarcity level. randomizes speed, size and side.
 function pushFish() {
-    for (let i = 0; i <=6; i++) {
-        fishies.push(new fish(random(1,5),random(10, 40),random(1,2)));
+    for (let i = 0; i <=scarcity; i++) {
+        fishies.push(new fish(random(1,2.5),random(15,30)));
+    }
+    for (let i = 0; i <=scarcity; i++) {
+        fishies2.push(new fish2(random(1,2.5),random(15,30)));
     }
 }
 
 //resets fish location after being reeled and spawns a new one, so long as there is enough time and scarcity space
 function resetFish(fish) {
-    if(fish.start=1){
-        fish.x = 0;
-    } else {
-        fish.x=1000;
-    }
-    fish.y = random(300, 1000);
+    fish.x = 0;
+    fish.y = random(340, 1000);
+}
+
+//resets fish2 location after being reeled and spawns a new one, so long as there is enough time and scarcity space
+function resetFish2(fish2) {
+    fish2.x = 1000;
+    fish2.y = random(340, 1000);
 }
 
 //draws fish, randomized textures.
@@ -148,6 +184,13 @@ function drawFish() {
         noStroke();
         fill("#000000");
         ellipse(fish.x, fish.y, fish.size);
+        pop();
+    })
+    fishies2.forEach(fish2 => {
+        push();
+        noStroke();
+        fill("#000000");
+        ellipse(fish2.x, fish2.y, fish2.size);
         pop();
     })
     /* for when i add assets, circles for now
@@ -168,25 +211,28 @@ function drawRod() {
     stroke('#000000')
     strokeWeight(1);
     fill("#ffffff");
-    ellipse(rod.hook.x,rod.hook.y,rod.hook.size);
-    strokeWeight(5);
-    line(rod.hook.x1,rod.hook.y1,rod.shaft.x2,rod.shaft.y2);
+    ellipse(hookX,rod.hook.y,rod.hook.size);
     strokeWeight(10);
     stroke('#964B00');
     line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
     pop();
     if (rodUnspooling===true){
-        rod.hook.y = rod.hook.y +10;
-    } 
+        rod.hook.y += 10;
+    } else {
+        
+    }
+
+    
     if (keyIsDown(RIGHT_ARROW)) {
-        rod.hook.x= rod.hook.x + 5;
+        rod.hook.x +=5;
     }
     if (keyIsDown(LEFT_ARROW)) {
-        rod.hook.x= rod.hook.x - 5;
+        rod.hook.x -=5;
     }
     if (keyIsDown(82)){
         rod.hook.y = rod.hook.y -3;
     }
+    
     /*
     moves hook and end of line X based on arrow keys. left/right
     moves hook and end of line Y down when button F is pressed (at  a constant rate) press F again to reeling down. plays unspool sound loop
