@@ -12,7 +12,7 @@
 function preload(){
 //img()
 }
-let scarcity = 5; //(determines how many fish will be in the water, increases with overfishing, resets when fish are sold)
+let scarcity = 3; //(determines how many fish will be in the water, increases with overfishing, resets when fish are sold)
 let gameState = 'fishin';
 let rodUnspooling = false;
 let hookX;
@@ -26,6 +26,7 @@ hook: {
     size: 20,//size of asset
     hooked: false
 },
+//bro dont call it that :(
 shaft:   {
     x1: 650,//player sprite x position
     x2: 500, //hook.y, to be later constrained for realism
@@ -88,6 +89,7 @@ function setup() {
 function keyPressed(){
     if (keyCode===70){
         rodUnspooling=!rodUnspooling;
+        console.log(rodUnspooling)
     }
 }
 
@@ -117,7 +119,7 @@ function draw() {
             drawFish();
             moveFish();
             drawRod();
-            keyPressed();
+            
             //catchFish();
             break;
     }
@@ -130,11 +132,12 @@ function hookCollision(){
     } else if (rod.hook.x<=350){
         rod.hook.x=350;
     }
-    hookY = constrain(rod.hook.y,300,950);
+    hookY = constrain(rod.hook.y,300,900);
     if (rod.hook.y<=300){
         rod.hook.y=300;
-    } else if (rod.hook.y>=950){
-        rod.hook.y=940;
+    } else if (rod.hook.y>=900){
+        rodUnspooling=false;
+        rod.hook.y=900;
     }
 }
 
@@ -217,24 +220,25 @@ function drawRod() {
     strokeWeight(10);
     stroke('#964B00');
     line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
+    strokeWeight(5);
+    stroke("000000");
+    line(rod.shaft.x2,rod.shaft.y2,hookX,hookY);
     pop();
     if (rodUnspooling===true){
         rod.hook.y += 10;
-    } else {
-        
-    }
-
+    } else 
+        rod.hook.y = hookY;
     
     if (keyIsDown(RIGHT_ARROW)) {
-        rod.hook.x +=5;
+        rod.hook.x +=3;
     }
     if (keyIsDown(LEFT_ARROW)) {
-        rod.hook.x -=5;
+        rod.hook.x -=3;
     }
     if (keyIsDown(82)){
         rod.hook.y = rod.hook.y -3;
     }
-    
+}
     /*
     moves hook and end of line X based on arrow keys. left/right
     moves hook and end of line Y down when button F is pressed (at  a constant rate) press F again to reeling down. plays unspool sound loop
@@ -243,7 +247,7 @@ function drawRod() {
     slowly moves rod down when fish is on the line (rod.hook.hooked = true) at a rate proportional to fish.size and fish.speed. 
     when fish is hooked, also change rod.shaft.fishHooked to secondary postion and make it shake a little bit.
     */
-}
+
 
 /* 
 //checks if hook overlaps fish.radius, and make random checks until fish bites.
