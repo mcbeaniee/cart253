@@ -15,8 +15,11 @@ function preload(){
 let scarcity = 3; //(determines how many fish will be in the water, increases with overfishing, resets when fish are sold)
 let gameState = 'fishin';
 let rodUnspooling = false;
+let hookMoving = 0;
 let hookX;
 let hookY;
+
+let endFrame;
 
 //rod object, contains hook, line and sink- i mean shaft
 const rod = {
@@ -85,9 +88,22 @@ function setup() {
     })
     //timetofish();
 }
+function mousePressed(){
+    if (gameState==='reelin'){
+        rod.hook.y = rod.hook.y -100
+    }
+}
 
 function keyPressed(){
+    if (keyCode==89){
+        endFrame = get();
+        gameState='reelin';
+    }
     if (keyCode===70){
+        rodUnspooling=!rodUnspooling;
+        console.log(rodUnspooling)
+    }
+    if (keyCode===40){
         rodUnspooling=!rodUnspooling;
         console.log(rodUnspooling)
     }
@@ -119,8 +135,16 @@ function draw() {
             drawFish();
             moveFish();
             drawRod();
-            
+            rodFunctions();
             //catchFish();
+            break;
+        case 'reelin':
+            background('#87CEEB');
+            fill('#007BA7');
+            rect(0,300,1000,1000);
+            drawRod();
+            hookCollision();
+            rodCatching();
             break;
     }
 }
@@ -211,7 +235,7 @@ function drawFish() {
 /*
 code for drawing, moving, and controlling rod.hook and rod.line parameters
 */
-function drawRod() {
+function drawRod(){
     push();
     stroke('#000000')
     strokeWeight(1);
@@ -224,19 +248,31 @@ function drawRod() {
     stroke("000000");
     line(rod.shaft.x2,rod.shaft.y2,hookX,hookY);
     pop();
+}
+function rodFunctions() {
     if (rodUnspooling===true){
         rod.hook.y += 10;
-    } else 
-        rod.hook.y = hookY;
-    
+        hookMoving +=10;
+    } else {
+        hookMoving = 0;
+    }
     if (keyIsDown(RIGHT_ARROW)) {
         rod.hook.x +=3;
+        hookMoving +=10;
+    }   else {
+            hookMoving = 0;
     }
     if (keyIsDown(LEFT_ARROW)) {
         rod.hook.x -=3;
+        hookMoving +=10;
+    }   else {
+            hookMoving = 0;
     }
-    if (keyIsDown(82)){
+    if (keyIsDown(82) || keyIsDown(UP_ARROW)&&rodUnspooling===false){
         rod.hook.y = rod.hook.y -3;
+        hookMoving +=10;
+    }   else {
+            hookMoving = 0;
     }
 }
     /*
@@ -248,15 +284,35 @@ function drawRod() {
     when fish is hooked, also change rod.shaft.fishHooked to secondary postion and make it shake a little bit.
     */
 
+function rodCatching(){
+    rod.hook.y += 5
+}
 
-/* 
 //checks if hook overlaps fish.radius, and make random checks until fish bites.
 function catchFish() { 
-    when fish bites: rod.hook.hooked = true
-    if fish reaches x pixels above level fish was hooked, 
-        fish will be caught. 
-    else fish reaches location x pixels lower than level fish was hooked, 
-        rod breaks and fully reels up. fish is lost.
+    //when fish bites: rod.hook.hooked = true
+    fishies.forEach(fish=>{
+        if (rod.hook.y===fish.y-30){
+            resetFish();
+            gameState = 'fishin';
+        }
+
+        if (fish.y===300){
+            gameState = 'fishin';
+        }
+    }) 
+    fishies.forEach(fish=>{
+        if (rod.hook.y===fish.y-30){
+            resetFish();
+            gameState = 'fishin';
+        }
+
+        if (fish.y===300){
+            gameState = 'fishin';
+        }
+    }) 
+    
+   
 }   
 
 //plays day/night cycle and switches state to fish cashin when time runs out. 
@@ -264,6 +320,7 @@ function timeToCash() {
 
 }
 
+/*
 //sells fish and moves on to next day, resetting gameState
 cashFish() {
     if E key pressed to sell all fish, 
