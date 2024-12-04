@@ -128,6 +128,7 @@ function draw() {
             fill('#ffff00');
             textSize(30);
             text('$' + round(munnee,2),50,100);
+            rod.shaft.y2=100;
             //img(assets) //backgrounds, player location, and sea floor. as well as moving water sprite.
             resetFish(fish);
             resetFish2(fish2);
@@ -144,6 +145,9 @@ function draw() {
             fill('#ffff00');
             textSize(30);
             text('$' + round(munnee,2),50,100);
+            fill('#000000');
+            text('MASH!!!!!', 750,150);
+            rod.shaft.y2=random(250,200);
             drawRod();
             moveFish();
             drawFish();
@@ -244,14 +248,16 @@ function drawRod(){
     push();
     stroke('#000000')
     strokeWeight(1);
-    fill("#ffffff");
-    ellipse(hookX,hookY,rod.hook.size);
     strokeWeight(10);
     stroke('#964B00');
     line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
     strokeWeight(5);
-    stroke("000000");
+    stroke("#000000");
     line(rod.shaft.x2,rod.shaft.y2,hookX,hookY);
+    fill("#ff0000");
+    stroke('#ffffff');
+    strokeWeight(1);
+    ellipse(hookX,hookY,rod.hook.size);
     pop();
 }
 function rodFunctions() {
@@ -290,7 +296,10 @@ function rodFunctions() {
     */
 
 function rodCatching(){
-    rod.hook.y += 5
+    rodUnspooling=true;
+    if (rodUnspooling===true){
+        rod.hook.y += 5;
+    }
 }
 
 function catchingFish(){
@@ -303,6 +312,7 @@ function catchingFish(){
 
         if (caught&&hookMoving===0&&rodUnspooling===false){
             if(randumbCatch<2){
+                resetFish(fish);
                 fish.x = rod.hook.x;
                 fish.y = rod.hook.y;
                 gameState='reelin';
@@ -320,6 +330,7 @@ function catchingFish(){
 
         if (caught2&&hookMoving===0&&rodUnspooling===false){
             if(randumbCatch<2){
+                resetFish2(fish2);
                 fish2.x = rod.hook.x;
                 fish2.y = rod.hook.y;
                 gameState='reelin';
@@ -337,24 +348,31 @@ function catchFish() {
     //when fish bites: rod.hook.hooked = true
     fishies.forEach(fish=>{
         fish.value = round((10 +fish.size*.5),2);
-        if (rod.hook.y===950){
-            resetFish();
-            gameState = 'fishin';
-        }
-
-        if (rod.hook.y<365){
+        if (rod.hook.y>900){
+                rodUnspooling=false;
+                rod.hook.y = 350;
+                gameState = 'fishin';
+                resetFish(fish);
+            }
+        if (rod.hook.y<355){
+            rodUnspooling=false;
+            rod.hook.y = 350;
             gameState = 'fishin';
             munnee = munnee + fish.value;
         }
     }) 
     fishies2.forEach(fish2=>{
         fish2.value = round((10 +fish2.size*.5),2);
-        if (rod.hook.y===950){
-            resetFish2();
-            gameState = 'fishin';
+        if (rod.hook.y>900){
+                rodUnspooling=false;
+                rod.hook.y = 350;
+                gameState = 'fishin';
+                resetFish2(fish2);
         }
 
-        if (rod.hook.y<365){
+        if (rod.hook.y<355){
+            rodUnspooling=false;
+            rod.hook.y = 350;
             gameState = 'fishin';
             munnee = munnee + fish2.value;
         }
