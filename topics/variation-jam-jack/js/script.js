@@ -8,9 +8,30 @@
 "use strict";
 
 //FISH minigame, base for variations
+let main;
+let fishOne;
+let fishOne2;
+let fishTwo;
+let fishTwo2;
+let fishThree;
+let fishThree2;
+let hookd;
+let hooker;
+let VCR;
+let money;
 
 function preload(){
-//img()
+    main = loadImage("assets/images/mainscene.gif")
+    fishOne = loadImage("assets/images/1fish.gif")
+    fishTwo = loadImage("assets/images/2fish.gif")
+    fishThree = loadImage("assets/images/3fish.gif")
+    fishOne2 = loadImage("assets/images/1fish2.gif")
+    fishTwo2 = loadImage("assets/images/2fish2.gif")
+    fishThree2 = loadImage("assets/images/3fish2.gif")
+    hookd = loadImage("assets/images/hookstatic.png")
+    hooker = loadImage("assets/images/fishhooked.gif")
+    VCR = loadFont('assets/VCR_OSD_MONO_1.001.ttf')
+    money = loadSound('assets/sounds/money.mp3')
 }
 let scarcity = 3; //(determines how many fish will be in the water, increases with overfishing, resets when fish are sold)
 let gameState = 'fishin';
@@ -19,6 +40,8 @@ let hookMoving = 0;
 let hookX;
 let hookY;
 let munnee = 0;
+
+let fishCaught = false;
 
 let endFrame;
 
@@ -32,9 +55,9 @@ hook: {
 },
 //bro dont call it that :(
 shaft:   {
-    x1: 650,//player sprite x position
+    x1: 700,//player sprite x position
     x2: 500, //hook.y, to be later constrained for realism
-    y1: 150,//player sprite y position
+    y1: 170,//player sprite y position
     y2: 100,//constant position determined by whether or not a fish is being reeled in or not
     fishHooked: false //determines y position
 },
@@ -80,12 +103,12 @@ function setup() {
     rodUnspooling=false;
     pushFish();
     fishies.forEach(fish =>{
-        fish.y = random(340, 1000);
-        fish.x = random(0, 1000)
+        fish.y = random(340, 900);
+        fish.x = random(0, 900)
     })
     fishies2.forEach(fish2 =>{
-        fish2.y = random(340, 1000);
-        fish2.x = random(0, 1000)
+        fish2.y = random(340, 900);
+        fish2.x = random(0, 900)
     })
     //timetofish();
 }
@@ -112,6 +135,7 @@ function keyPressed(){
 
 //draws assets and objects, as well as pushes array
 function draw() {
+    textFont(VCR);
     switch(gameState){
         /*shop is a non-essential. can work but need to establish basics first
         case 'shop':
@@ -120,14 +144,14 @@ function draw() {
             break;
             */
         case 'fishin':
+            fishCaught=false;
             background('#87CEEB');
             hookCollision();
             push();
-            fill('#007BA7');
-            rect(0,300,1000,1000);
+            image(main,0,0);
             fill('#ffff00');
             textSize(30);
-            text('$' + round(munnee,2),50,100);
+            text('$' + round(munnee,2),820,100);
             rod.shaft.y2=100;
             //img(assets) //backgrounds, player location, and sea floor. as well as moving water sprite.
             resetFish(fish);
@@ -140,15 +164,14 @@ function draw() {
             break;
         case 'reelin':
             background('#87CEEB');
-            fill('#007BA7');
-            rect(0,300,1000,1000);
+            image(main,0,0);
             fill('#ffff00');
             textSize(30);
-            text('$' + round(munnee,2),50,100);
+            text('$' + round(munnee,2),820,100);
             fill('#000000');
-            text('MASH!!!!!', 750,150);
+            text('MASH!!!!!', rod.hook.x+50,rod.hook.y+15);
             rod.shaft.y2=random(250,200);
-            drawRod();
+            drawRodReel();
             moveFish();
             drawFish();
             hookCollision();
@@ -206,13 +229,13 @@ function pushFish() {
 //resets fish location after being reeled and spawns a new one, so long as there is enough time and scarcity space
 function resetFish(fish) {
     fish.x = 0;
-    fish.y = random(370, 940);
+    fish.y = random(370, 840);
 }
 
 //resets fish2 location after being reeled and spawns a new one, so long as there is enough time and scarcity space
 function resetFish2(fish2) {
     fish2.x = 1000;
-    fish2.y = random(340, 940);
+    fish2.y = random(340, 840);
 }
 
 //draws fish, randomized textures.
@@ -220,15 +243,25 @@ function drawFish() {
     fishies.forEach(fish => {
         push();
         noStroke();
-        fill("#000000");
-        ellipse(fish.x, fish.y, fish.size);
+        if (fish.size>20&&fish.size<25){
+            image(fishOne,fish.x,fish.y);
+        }   else if (fish.size>25){
+            image(fishTwo,fish.x,fish.y);
+        }   else {
+            image(fishThree,fish.x,fish.y);
+        }
         pop();
     })
     fishies2.forEach(fish2 => {
         push();
         noStroke();
-        fill("#000000");
-        ellipse(fish2.x, fish2.y, fish2.size);
+        if (fish2.size>20&&fish2.size<25){
+            image(fishOne2,fish2.x,fish2.y);
+        }   else if (fish2.size>25){
+            image(fishTwo2,fish2.x,fish2.y);
+        }   else {
+            image(fishThree2,fish2.x,fish2.y);
+        }
         pop();
     })
     /* for when i add assets, circles for now
@@ -257,7 +290,23 @@ function drawRod(){
     fill("#ff0000");
     stroke('#ffffff');
     strokeWeight(1);
-    ellipse(hookX,hookY,rod.hook.size);
+    image(hookd,hookX-63,hookY);
+    pop();
+}
+function drawRodReel(){
+    push();
+    stroke('#000000')
+    strokeWeight(1);
+    strokeWeight(10);
+    stroke('#964B00');
+    line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
+    strokeWeight(5);
+    stroke("#000000");
+    line(rod.shaft.x2,rod.shaft.y2,hookX,hookY);
+    fill("#ff0000");
+    stroke('#ffffff');
+    strokeWeight(1);
+    image(hooker,hookX-63,hookY);
     pop();
 }
 function rodFunctions() {
@@ -319,7 +368,6 @@ function catchingFish(){
             }
         }
         if (rod.hook.y<270){
-            munnee=munnee+fish.value;
             gameState = 'fishin';
         }
     })
@@ -337,7 +385,6 @@ function catchingFish(){
             }
         }
         if (rod.hook.y<270){
-            munnee=munnee+fish2.value;
             gameState = 'fishin';
         }
     })
@@ -354,11 +401,15 @@ function catchFish() {
                 gameState = 'fishin';
                 resetFish(fish);
             }
-        if (rod.hook.y<355){
+        if (rod.hook.y<350){
             rodUnspooling=false;
+            munnee=munnee+fish.value;
             rod.hook.y = 350;
             gameState = 'fishin';
-            munnee = munnee + fish.value;
+        }
+        if (fishCaught===true){
+            munnee = munnee + fish2.value;
+            money.play();
         }
     }) 
     fishies2.forEach(fish2=>{
@@ -368,13 +419,20 @@ function catchFish() {
                 rod.hook.y = 350;
                 gameState = 'fishin';
                 resetFish2(fish2);
+                munnee = munnee - fish2.value;
+                fishCaught = false;
         }
 
-        if (rod.hook.y<355){
+        if (rod.hook.y<350){
+            fishCaught = true;
             rodUnspooling=false;
+            munnee=munnee+fish2.value;
             rod.hook.y = 350;
             gameState = 'fishin';
+        }
+        if (fishCaught===true){
             munnee = munnee + fish2.value;
+            money.play();
         }
     }) 
 }   
