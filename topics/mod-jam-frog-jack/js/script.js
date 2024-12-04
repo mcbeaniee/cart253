@@ -320,7 +320,7 @@ function drawFrog() {
 function checkTongueFlyOverlap() {
     flies.forEach(fly => {
     // Get distance from tongue to fly
-    const d = dist(frog.tongue.x, frog.tongue.y, fly.x, fly.y);
+    const d = dist(rod.hook.x, rod.hook.y, fly.x, fly.y);
     // Check if it's an overlap
     const eaten = (d < 20);
     if (eaten) {

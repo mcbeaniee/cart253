@@ -127,7 +127,7 @@ function draw() {
             rect(0,300,1000,1000);
             fill('#ffff00');
             textSize(30);
-            text('$' + munnee,50,100);
+            text('$' + round(munnee,2),50,100);
             //img(assets) //backgrounds, player location, and sea floor. as well as moving water sprite.
             resetFish(fish);
             resetFish2(fish2);
@@ -141,6 +141,9 @@ function draw() {
             background('#87CEEB');
             fill('#007BA7');
             rect(0,300,1000,1000);
+            fill('#ffff00');
+            textSize(30);
+            text('$' + round(munnee,2),50,100);
             drawRod();
             moveFish();
             drawFish();
@@ -189,7 +192,7 @@ function moveFish() {
 //pushes new fish to array, up to a limit of the current scarcity level. randomizes speed, size and side.
 function pushFish() {
     for (let i = 0; i <=scarcity; i++) {
-        fishies.push(new fish(random(1,2.5),random(15,30),fish.size*.5));
+        fishies.push(new fish(random(1,2.5),random(15,30),10));
     }
     for (let i = 0; i <=scarcity; i++) {
         fishies2.push(new fish2(random(1,2.5),random(15,30),10+fish2.size*.5));
@@ -199,13 +202,13 @@ function pushFish() {
 //resets fish location after being reeled and spawns a new one, so long as there is enough time and scarcity space
 function resetFish(fish) {
     fish.x = 0;
-    fish.y = random(370, 1000);
+    fish.y = random(370, 940);
 }
 
 //resets fish2 location after being reeled and spawns a new one, so long as there is enough time and scarcity space
 function resetFish2(fish2) {
     fish2.x = 1000;
-    fish2.y = random(340, 1000);
+    fish2.y = random(340, 940);
 }
 
 //draws fish, randomized textures.
@@ -298,7 +301,7 @@ function catchingFish(){
         fish.radius=fish.size*3
         const caught = (d<fish.radius);
 
-        if (caught&&hookMoving===0){
+        if (caught&&hookMoving===0&&rodUnspooling===false){
             if(randumbCatch<2){
                 fish.x = rod.hook.x;
                 fish.y = rod.hook.y;
@@ -315,7 +318,7 @@ function catchingFish(){
         fish2.radius=fish2.size*3
         const caught2 = (d2<fish2.radius);
 
-        if (caught2&&hookMoving===0){
+        if (caught2&&hookMoving===0&&rodUnspooling===false){
             if(randumbCatch<2){
                 fish2.x = rod.hook.x;
                 fish2.y = rod.hook.y;
@@ -333,27 +336,29 @@ function catchingFish(){
 function catchFish() { 
     //when fish bites: rod.hook.hooked = true
     fishies.forEach(fish=>{
+        fish.value = round((10 +fish.size*.5),2);
         if (rod.hook.y===950){
             resetFish();
             gameState = 'fishin';
         }
 
-        if (fish.y===300){
+        if (rod.hook.y<365){
             gameState = 'fishin';
+            munnee = munnee + fish.value;
         }
     }) 
     fishies2.forEach(fish2=>{
+        fish2.value = round((10 +fish2.size*.5),2);
         if (rod.hook.y===950){
             resetFish2();
             gameState = 'fishin';
         }
 
-        if (fish2.y===300){
+        if (rod.hook.y<365){
             gameState = 'fishin';
+            munnee = munnee + fish2.value;
         }
     }) 
-    
-   
 }   
 
 /*
