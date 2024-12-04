@@ -18,6 +18,7 @@ let rodUnspooling = false;
 let hookMoving = 0;
 let hookX;
 let hookY;
+let munnee = 0;
 
 let endFrame;
 
@@ -48,7 +49,7 @@ line:    {
 
 //fish object, to be pushed into an array
 class fish{
-    constructor (speed,size){
+    constructor (speed,size,value){
         this.x = 0; //moves across screen from initated position
         this.y = 600; //random from surface to floor of screen 
         this.speed = speed;//random but slow
@@ -59,7 +60,7 @@ class fish{
 }
 
 class fish2 {
-    constructor (speed,size){
+    constructor (speed,size,value){
         this.x = 1000; //moves across screen from initated position
         this.y = 600; //random from surface to floor of screen 
         this.speed = speed;//random but slow
@@ -118,17 +119,15 @@ function draw() {
             buyUpgrades()
             break;
             */
-        case 'cash':
-            //moves back to fishin when "next day" is pressed"
-            //cash assets
-            cashFish();
-            break;
         case 'fishin':
             background('#87CEEB');
             hookCollision();
             push();
             fill('#007BA7');
             rect(0,300,1000,1000);
+            fill('#ffff00');
+            textSize(30);
+            text('$' + munnee,50,100);
             //img(assets) //backgrounds, player location, and sea floor. as well as moving water sprite.
             resetFish(fish);
             resetFish2(fish2);
@@ -136,15 +135,18 @@ function draw() {
             moveFish();
             drawRod();
             rodFunctions();
-            //catchFish();
+            catchingFish();
             break;
         case 'reelin':
             background('#87CEEB');
             fill('#007BA7');
             rect(0,300,1000,1000);
             drawRod();
+            moveFish();
+            drawFish();
             hookCollision();
             rodCatching();
+            catchFish();
             break;
     }
 }
@@ -187,17 +189,17 @@ function moveFish() {
 //pushes new fish to array, up to a limit of the current scarcity level. randomizes speed, size and side.
 function pushFish() {
     for (let i = 0; i <=scarcity; i++) {
-        fishies.push(new fish(random(1,2.5),random(15,30)));
+        fishies.push(new fish(random(1,2.5),random(15,30),fish.size*.5));
     }
     for (let i = 0; i <=scarcity; i++) {
-        fishies2.push(new fish2(random(1,2.5),random(15,30)));
+        fishies2.push(new fish2(random(1,2.5),random(15,30),10+fish2.size*.5));
     }
 }
 
 //resets fish location after being reeled and spawns a new one, so long as there is enough time and scarcity space
 function resetFish(fish) {
     fish.x = 0;
-    fish.y = random(340, 1000);
+    fish.y = random(370, 1000);
 }
 
 //resets fish2 location after being reeled and spawns a new one, so long as there is enough time and scarcity space
@@ -288,11 +290,50 @@ function rodCatching(){
     rod.hook.y += 5
 }
 
+function catchingFish(){
+    let randumbCatch = 0;
+    randumbCatch = random(0,500);
+    fishies.forEach(fish=>{
+        const d = dist(rod.hook.x, rod.hook.y, fish.x, fish.y);
+        fish.radius=fish.size*3
+        const caught = (d<fish.radius);
+
+        if (caught&&hookMoving===0){
+            if(randumbCatch<2){
+                fish.x = rod.hook.x;
+                fish.y = rod.hook.y;
+                gameState='reelin';
+            }
+        }
+        if (rod.hook.y<270){
+            munnee=munnee+fish.value;
+            gameState = 'fishin';
+        }
+    })
+    fishies2.forEach(fish2=>{
+        const d2 = dist(rod.hook.x, rod.hook.y, fish2.x, fish2.y);
+        fish2.radius=fish2.size*3
+        const caught2 = (d2<fish2.radius);
+
+        if (caught2&&hookMoving===0){
+            if(randumbCatch<2){
+                fish2.x = rod.hook.x;
+                fish2.y = rod.hook.y;
+                gameState='reelin';
+            }
+        }
+        if (rod.hook.y<270){
+            munnee=munnee+fish2.value;
+            gameState = 'fishin';
+        }
+    })
+}
+
 //checks if hook overlaps fish.radius, and make random checks until fish bites.
 function catchFish() { 
     //when fish bites: rod.hook.hooked = true
     fishies.forEach(fish=>{
-        if (rod.hook.y===fish.y-30){
+        if (rod.hook.y===950){
             resetFish();
             gameState = 'fishin';
         }
@@ -301,24 +342,19 @@ function catchFish() {
             gameState = 'fishin';
         }
     }) 
-    fishies.forEach(fish=>{
-        if (rod.hook.y===fish.y-30){
-            resetFish();
+    fishies2.forEach(fish2=>{
+        if (rod.hook.y===950){
+            resetFish2();
             gameState = 'fishin';
         }
 
-        if (fish.y===300){
+        if (fish2.y===300){
             gameState = 'fishin';
         }
     }) 
     
    
 }   
-
-//plays day/night cycle and switches state to fish cashin when time runs out. 
-function timeToCash() { 
-
-}
 
 /*
 //sells fish and moves on to next day, resetting gameState
