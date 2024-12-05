@@ -1,46 +1,56 @@
 # PSEUDOCODE FOR VARIATION JAM
 
-//FISH minigame, base for variations
+//GO FISH GO minigame, base for variations
 
 let assets()
 
-//rod object, contains hook, line and sink- i mean shaft
-const rod = {
-    hook {
-        x = controlled by arrow keys
-        y = current reel level
-        size = size of asset
-        hooked = y/n
-    },
-    shaft   {
-        x1 = player sprite x position
-        x2 = hook.y, to be later constrained for realism
-        y1 = player sprite y position
-        y2 = constant position determined by whether or not a fish is being reeled in or not
-        fishHooked = y/n, determines y position
-    },
-    line    {
-        i dont know how to make the line curve/ swing to location rather than a straight line but i know theres a way to do it
-        x1 = hook.X
-        x2 = rod.x2
-        y1 = hook.y
-        y2 = rod.y2
-    }
+preload()
+
+let playerX;
+let playerY;
+let gameState;
+
+//smaller food that is constantly present but gives back less health
+class smallFood {
+    x = 
+    y = 
+    speed = 
 }
 
-const food = {
-    faker = bool, most are fake
+class food {
+    x = 
+    y = 
     size = 
-    x 
-    y 
+    speed = 
+    isbomb = checks if food is a bomb, higher chance of this happening. instantly kills you
+    isfake = if food is not a bomb, it has a chance to be bait/fake and has a slightly off color and slightly smaller size, instantly kills you if touched
 }
 
-const fish = {
-    x = x position, controlled by wasd or arrow keys
-    y = y position, controlled by wasd or arrow keys
-    health = health, drains slowly
+const playerFish {
+    x = 0,//controlled with movement keys, constrained to screen by playerX variable
+    y = 0,//controlled with movement keys, constrained to screen by playerY variable
+    health = 1000//slowly drains and needs food to refill
 }
+
+const villainfish {
+    hook
+    x: 
+    y:  
+    quips: linked to json file filled with quips that the fish will say at you when trying to catch you
+}
+
+let foods[];
+let smallFoods[];
 
 setup(){
     images and stuff
+    pushFood
+    pushSmallFood
+    
+    randomize x/y of food and smallfood arrays (forEach)
+}
+
+draw(){
+    gameState "playing"
+    gameState "dead"
 }

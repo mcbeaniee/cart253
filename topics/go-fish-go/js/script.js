@@ -7,7 +7,9 @@
 
 "use strict";
 
-//FISH minigame, base for variations
+//GO FISH GO minigame, or variation 1
+
+//image lets
 let main;
 let fishOne;
 let fishOne2;
@@ -19,7 +21,9 @@ let hookd;
 let hooker;
 let VCR;
 let money;
+let playerSprite;
 
+//preload function
 function preload(){
     main = loadImage("assets/images/mainscene.gif")
     fishOne = loadImage("assets/images/1fish.gif")
@@ -32,260 +36,302 @@ function preload(){
     hooker = loadImage("assets/images/fishhooked.gif")
     VCR = loadFont('assets/VCR_OSD_MONO_1.001.ttf')
     money = loadSound('assets/sounds/money.mp3')
+    playerSprite = loadImage('assets/images/playerFish.gif')
 }
 
-let gameState = "gameStart";
+//variables
+let gameState = 'playing';
+let playerX;
+let playerY;
+let randomVariant;
 
+//smaller and safer but less appetizing food
+class smallFood{
+    constructor (speed){
+        this.x = 0; //moves across screen from initated position
+        this.y = 600; //random from surface to floor of screen 
+        this.speed = speed;//random but slow
+    }
+}
 
-//fish object
-const fish = { 
-    body: {
-        x: 320,
-        y: 240,
-        size: 80
+//food objects, can be a bomb, fake (bait) or real
+class food{
+    constructor (speed,variant){
+        this.x = 0; //moves across screen from initated position
+        this.y = 600; //random from surface to floor of screen 
+        this.speed = speed;//random but slow
+        this.variant = variant;//random 
+        this.isBomb = false,//checks if food is a bomb, higher chance of this happening. deals a lot of damage depending on distance from bomb
+        this.isFake = false//if food is not a bomb, it has a chance to be bait/fake and has a slightly off color and slightly smaller size, instantly kills you if touched
+    }
+}
+
+//our player
+const playerFish = {
+    x: 700, //controlled with movement keys, constrained to screen by playerX variable
+    y: 600, //controlled with movement keys, constrained to screen by playerY variable
+    health: 500, //slowly drains and needs food to refill
+    dashDistance: 250 //dash distance, slowly charges up to full and charges faster when health is low. allows a dash proportional to that distance towwards the mouse pointer
+}
+
+const villainFish = {
+    hook: {
+        x: 500, //follows player position
+        y: 300, //bobs up and down and snaps to player position when bait is eaten
+        baitEaten: false
     },
-};
-
-//let pushCounter = 0; a long forgotten variable
-
-// Our fly
-// Has a position, size, and speed of horizontal movement
-class fly{
-    constructor(speed,size){
-        this.x = 0;
-        this.y = 600;
-        this.speed = speed;
-        this.size = size;
+    //bro dont call it that :( (i'm still calling it that)
+    shaft:   {
+        x1: 700, //villainfish asset location 
+        x2: 500, //hook location 
+        y1: 170,//villainfish asset location
+        y2: 100,//above hook, goes down when bait is eaten
+    },
+    fish: {
+        quips: undefined //linked to json file with quips that he says randomly
     }
 }
 
-// Our  evil poison fly
-// Has a position, size, and speed of horizontal movement
-const poisonFly = {
-    x: 0,
-    y: 200, // Will be random
-    size: 40,
-    speed: .7
-};
+let foods = []
+let smallFoods = []
 
-// all important fly array 
-// "do not touch the gnome he is holding together the fabric of reality" looking ass array
-let flies = [] 
-
-/**
- * Creates the canvas and initializes the fly
- */
+//sets up scene and resets arrays
+//also randomizes obstacle positions
 function setup() {
-    createCanvas(640, 480);
-    pushFly();
-    // Give the fly its first random position
-    flies.forEach(fly => {
-        resetFly(fly);
-    });
-    //resetFly but for the poison guy
-    resetPoisonFly();
+    createCanvas(1024,1024);
+    gameState='playing';
+    playerFish.health=500;
+    pushFoods();
+    foods.forEach(food =>{
+        food.y = random(340, 900);
+        food.x = random(0, 900);
+    })
+    smallFoods.forEach(smallFood =>{
+        smallFood.y = random(340, 900);
+        smallFood.x = random(0, 900);
+    })
 }
 
-//draws the game based on the gamestate, playing or gameover
-function draw() {
-    switch (gameState){
-    //start screen, plays only the first time you open the website.
-    case "gameStart":
-        
-    //gamestate while actually playing
-    case "gamePlaying":
-        gameplay();
-        break;
-    //you have died, this gamestate deals with it
-    case "gameOver":
-        image(endFrame,0,0);
-        text(gameOverCongrats,190,160);
-        text(gameOverCustody,190,210);
-        text(gameOverScore + score + gameOverBonus,255,260);
-    break;
+function mousePressed(){
+    if (gameState==='playing'){
+        playerFish.x = constrain(mouseX,0,playerFish.dashDistance);
     }
 }
 
-//nested function for all gameplay-related functions called in the gamePlaying gameState
+function draw(){
+    textFont(VCR);
+    switch(gameState){
+        case 'playing':
+            gameplay();
+            break;
+        case 'gameOver':
+            break;
+        case 'gameOver2':
+            break;
+    }
+}
+
 function gameplay(){
-    clearTimeout(timer);
-    gameHasStarted=true;
-    background("#87ceeb");
-    moveFrog();
-
-    drawFrog();
-    checkTongueFlyOverlap();
-    checkFrogCollision();
-    movePoisonFly();
-    drawPoisonFly();
+    image(main,0,0);
+    playerCollision();
+    resetFood(food);
+    resetSmallFood(smallFood);
+    drawFoods();
+    moveFoods();
+    drawPlayer();
+    playerFunctions();
+    //drawRod();
 }
 
-/**
- * Moves the frog using WASD and arrow keys
- */
-function moveFrog() {
-    if (keyIsDown(87,UP_ARROW)){
-        frog.body.y = frog.body.y  - 5;
-    } 
+function pushFoods(){
+    for (let i = 0; i <=5; i++) {
+        foods.push(new food(random(1,2.5),random(10,30)));
+    }
+    for (let i = 0; i <=7; i++) {
+        smallFoods.push(new smallFood(random(1,2.5)));
+    }
+    
+}
 
-    if (keyIsDown(83,DOWN_ARROW)){
-        frog.body.y  = frog.body.y  + 5;
-    } 
+function resetFood(food){
+    food.x = -50;
+    food.y = random(370, 800);
+}
 
-    if (keyIsDown(65,LEFT_ARROW)){
-        frog.body.x= frog.body.x - 5;
-    } 
+function resetSmallFood(smallFood){
+    smallFood.x = -50;
+    smallFood.y = random(370, 800);
+}
 
-    if (keyIsDown(68,RIGHT_ARROW)){
-        frog.body.x= frog.body.x + 5;
-    } 
+function drawFoods(){
+    foods.forEach(food => {
+        push();
+        noStroke();
+        if (food.variant>15&&food.variant<25){
+            noStroke();
+            fill("#a1a103");
+            ellipse(food.x,food.y,28);
+        }   else if (food.variant>25){
+            noStroke();
+            fill('yellow');
+            ellipse(food.x,food.y,30);
+        }   else {
+            noStroke();
+            fill('black');
+            ellipse(food.x,food.y,70);
+        }
+        pop();
+    })
+    smallFoods.forEach(smallFood => {
+        push();
+        noStroke();
+        fill('yellow');
+        ellipse(smallFood.x,smallFood.y,10);
+        pop();
+    })
+}
+
+//add fish speed to fish x. functionally identical to moveFly()
+function moveFoods() {
+    console.log(randomVariant);
+    foods.forEach(food => {
+        food.x += food.speed;
+        // Handle the food going off the canvas
+        if (food.x > width+50) {
+            resetFood(food);
+            
+        }
+    })
+    smallFoods.forEach(smallFood => {
+        smallFood.x += smallFood.speed;
+        // Handle the small going off the canvas
+        if (smallFood.x > width+50) {
+            resetFood(smallFood);
+        }
+    })
+}
+
+//player collision
+function playerCollision(){
+    playerX = constrain(playerFish.x,0,940);
+    if (playerFish.x>=940){
+        playerFish.x=940;
+    } else if (playerFish.x<=0){
+        playerFish.x=0;
+    }
+    playerY = constrain(playerFish.y,350,924);
+    if (playerFish.y<=350){
+        playerFish.y=350;
+    } else if (playerFish.y>=924){
+        playerFish.y=924;
+    }
+}
+
+//behaviors of player based on game state
+function playerFunctions(){
+    switch(gameState){
+        case 'playing':
+            //wasd or arrow controls
+            if (keyIsDown(87||UP_ARROW)){
+                playerFish.y -= 5;
+            } 
+        
+            if (keyIsDown(83||DOWN_ARROW)){
+                playerFish.y  += 5;
+            } 
+        
+            if (keyIsDown(65||LEFT_ARROW)){
+                playerFish.x -= 5;
+            } 
+        
+            if (keyIsDown(68||RIGHT_ARROW)){
+                playerFish.x += 5;
+            } 
+            //health bar functions
+            let playerHealthBar;
+            playerHealthBar = constrain(playerFish.health,-1,500)
+            if (playerFish.health>500){
+                playerFish.health = 500;
+            }
+            playerFish.health -=1;
+            fill('#00ff00');
+            rect(252,900,playerFish.health,50);
+            if (playerFish.health<0){
+                gameState = 'gameOver';
+            }
+
+            //interaction with food, bombs and bait
+            foods.forEach(food => {
+                // Get distance from tongue to food
+                const d = dist(playerFish.x, playerFish.y, food.x, food.y);
+                // Check if it's an overlap
+                const eaten = (d < 40);
+                if (eaten) {
+                    if (food.variant>15&&food.variant<25){
+                        gameState = 'gameOver2';
+                    }   else if (food.variant>25){
+                        playerFish.health = playerFish.health + 200
+                        resetFood(food);
+                    }   else {
+                        playerFish.health = playerFish.health - 300
+                        resetFood(food);
+                    }
+                }
+            })
+            smallFoods.forEach(smallFood => {
+                // Get distance from tongue to food
+                const d2 = dist(playerFish.x, playerFish.y, smallFood.x, smallFood.y);
+                // Check if it's an overlap
+                const eaten = (d2 < 40);
+                if (eaten) {
+                        playerFish.health = playerFish.health + 25
+                        resetSmallFood(smallFood);
+                }
+            })
+            break;
+        case 'gameOver':
+            break;
+    }
 }
 
 
-/**
- * Displays the tongue (tip and line connection) and the frog (body)
- */
-function drawFrog() {
-    // Draw the frog's body
+
+/*
+function drawRod(){
     push();
-    fill("#00ff00");
-    noStroke();
-    ellipse(frog.body.x, frog.body.y, frog.body.size);
+    stroke('#000000')
+    strokeWeight(1);
+    strokeWeight(10);
+    stroke('#964B00');
+    line(villainFish.shaft.x1,villainFish.shaft.y1,villainFish.shaft.x2,villainFish.shaft.y2);
+    strokeWeight(5);
+    stroke("#000000");
+    line(villainFish.shaft.x2,villainFish.shaft.y2,hookX,hookY);
+    fill("#ff0000");
+    stroke('#ffffff');
+    strokeWeight(1);
+    image(hookd,hookX-63,hookY);
+    pop();
+}
+*/
+
+//draws player and player healthbar
+function drawPlayer(){
+    push();
+    image(playerSprite,playerX-80,playerY-130);
+    fill('red');
+    //real x/y collission bubble
+    //ellipse(playerX,playerY,40);
+    rect(252,900,500,50);
     pop();
 }
 
-/**
- * Handles the tongue overlapping the fly
- */
-function checkTongueFlyOverlap() {
-    flies.forEach(fly => {
-    // Get distance from tongue to fly
-    const d = dist(rod.hook.x, rod.hook.y, fly.x, fly.y);
-    // Check if it's an overlap
-    const eaten = (d < 20);
-    if (eaten) {
-        // Reset the fly
-        resetFly(fly);
-        score = score + 250
-        hasEaten=true;
-        // Bring back the tongue
-        frog.tongue.state = "inbound";
-    }
-})
-//poison fly kill functionality 
-const poisonD = dist(frog.tongue.x, frog.tongue.y, poisonFly.x, poisonFly.y);
-// Check if it's an overlap
-const poisonEaten = (poisonD < frog.tongue.size/2 + poisonFly.size/2);
-if (poisonEaten) {
-    //kills the frog
-    hasEaten = true;
-    gameState = "gameOver";
-    highScoreCounter();
-    endFrame = get();
-    gameOverCongrats = "You ate one of your stinky kids and paid the price."
-    gameOverCustody = "You died because that kid was so absolutely pungent!"
-}
-}
-
-//adds to the score as you survive
-function scorePoints(){
-    /*if (hasEaten===false){
-        score += 2;
-    }
-    else {
-    */
-    score += 1;
-    
-}
-
-//makeshift collision function for frog bassed on  overlap function
-function checkFrogCollision() {
-    flies.forEach(fly =>{
-        //get distance from frog body position
-        const frogD = dist(frog.body.x, frog.body.y, fly.x, fly.y);
-        
-        //check if touching fly
-        const dead = (frogD<50 );
-        if (dead) {
-            //game over
-            gameState = "gameOver";
-            endFrame = get();
-            highScoreCounter();
-        }
-
-    })
-    //poison fly touch logic (same as other)
-    const poisonFrogD = dist(frog.body.x, frog.body.y, poisonFly.x, poisonFly.y);
-    //kills if touching poison fly
-    const poisonDead = (poisonFrogD<50 );
-        if (poisonDead) {
-            //game over
-            gameOverCongrats = "You touched one of your stinky kids and paid the price."
-            gameOverCustody = "You died because that kid was so absolutely pungent!"
-            gameState = "gameOver";
-            highScoreCounter();
-            endFrame = get();
-        }
-}
-
-/**
- * Launch the tongue on click (if it's not launched yet)
- */
-function mousePressed() {
-    if (frog.tongue.state === "idle") {
-        frog.tongue.state = "outbound";
-    }
-}
-
-//shows game over screen and calculates high score
-function highScoreCounter() {
-    //bonus multiplier
-    if (hasEaten===false){
-        score = score*2
-    }
-    //if you scored higher than your previous highscore, set new one
-    //1st is without bonus.
-    if (score>highScore && gameState==="gameOver"){
-        if (hasEaten===true && gameState==="gameOver"){
-            highScore = score
-            gameOverScore = "NEW HIGH SCORE: ";
-            gameOverBonus = " ";
-        }
-
-        else {
-        highScore=score
-        gameOverScore = "NEW HIGH SCORE: "
-        }
-        
-    }
-    //no high score and no bonus state
-    if (score<highScore && gameState==="gameOver") {
-        if (hasEaten===true && gameState==="gameOver"){
-            gameOverBonus = " ";
-        }
-    }
-    
-}
-
-//resets the game and all parameters when the frog dies, when ZED is pressed
-function keyPressed() {
-    if (key === 'z' && gameState === "gameOver"){
-        //clears frog array
-        flies = [];
-        score = 0;
-        frog.body.x = 320;
-        frog.body.y = 240;
-        frog.tongue.state = "idle";
-        hasEaten=false;
-        gameState = "gamePlaying";
-        gameOverScore = "YOUR SCORE: ";
-        gameOverBonus = " x2 BONUS for not eating your children!";
-        gameOverCongrats = "Congratulations! you did not abandon your kids!";
-        gameOverCustody = "Unfortunately, you lost custody. presss Z to restart";
-        pushFly();
-        flies.forEach(fly => {
-            resetFly(fly);
-        });
-        resetPoisonFly();
+//functions of the devilish villain fish
+function villainFishFunctions(){
+    switch(gameState){
+        case 'playing':
+            break;
+        case 'gameOver':
+            break;
     }
 }

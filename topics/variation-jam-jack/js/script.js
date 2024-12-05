@@ -294,6 +294,7 @@ function drawRod(){
     image(hookd,hookX-63,hookY);
     pop();
 }
+
 function drawRodReel(){
     push();
     stroke('#000000')
