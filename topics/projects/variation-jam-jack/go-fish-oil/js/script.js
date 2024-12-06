@@ -81,7 +81,6 @@ let fishies2 = []
 //setup, create canvas, reset/initialize variables
 function setup() {
     createCanvas(1000,1000);
-    rodUnspooling=false;
     pushFish();
     fishies.forEach(fish =>{
         fish.y = random(340, 970);
@@ -95,7 +94,6 @@ function setup() {
 //draws assets and objects, as well as pushes array
 function draw() {
     textFont(VCR);
-            fishCaught=false;
             background('#87CEEB');
             hookCollision();
             push();
@@ -127,7 +125,6 @@ function hookCollision(){
     if (rod.hook.y<=300){
         rod.hook.y=300;
     } else if (rod.hook.y>=1000){
-        rodUnspooling=false;
         rod.hook.y=1000;
     }
 }

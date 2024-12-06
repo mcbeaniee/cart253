@@ -24,7 +24,6 @@ let bomb;
 function preload(){
     main = loadImage("assets/images/mainscene.gif")
     hookd = loadImage("assets/images/hookstatic.png")
-    hooker = loadImage("assets/images/fishhooked.gif")
     VCR = loadFont('assets/VCR_OSD_MONO_1.001.ttf')
     playerSprite = loadImage('assets/images/playerFish.gif')
     foody = loadImage('assets/images/realfood.gif')
