@@ -40,6 +40,7 @@ let hookMoving = 0;
 let hookX;
 let hookY;
 let munnee = 0;
+let suckSize;
 
 let fishCaught = false;
 
@@ -103,34 +104,17 @@ function setup() {
     rodUnspooling=false;
     pushFish();
     fishies.forEach(fish =>{
-        fish.y = random(340, 900);
+        fish.y = random(340, 970);
         fish.x = random(0, 900)
     })
     fishies2.forEach(fish2 =>{
-        fish2.y = random(340, 900);
+        fish2.y = random(340, 970);
         fish2.x = random(0, 900)
     })
 }
 function mousePressed(){
     if (gameState==='reelin'){
         rod.hook.y = rod.hook.y -100
-    }
-}
-
-function keyPressed(){
-    if (keyCode==89){
-        if (keyIsDown(16)===true){
-            endFrame = get();
-            gameState='reelin';
-        }
-    }
-    if (keyCode===70){
-        rodUnspooling=!rodUnspooling;
-        console.log(rodUnspooling)
-    }
-    if (keyCode===40){
-        rodUnspooling=!rodUnspooling;
-        console.log(rodUnspooling)
     }
 }
 
@@ -152,7 +136,7 @@ function draw() {
             image(main,0,0);
             fill('#ffff00');
             textSize(30);
-            text('$' + round(munnee,2),820,100);
+            text('Score ' + round(munnee,2),820,100);
             rod.shaft.y2=100;
             //img(assets) //backgrounds, player location, and sea floor. as well as moving water sprite.
             resetFish(fish);
@@ -161,40 +145,24 @@ function draw() {
             moveFish();
             drawRod();
             rodFunctions();
-            catchingFish();
-            break;
-        case 'reelin':
-            background('#87CEEB');
-            image(main,0,0);
-            fill('#ffff00');
-            textSize(30);
-            text('$' + round(munnee,2),820,100);
-            fill('#000000');
-            text('MASH!!!!!', rod.hook.x+50,rod.hook.y+15);
-            rod.shaft.y2=random(250,200);
-            drawRodReel();
-            moveFish();
-            drawFish();
-            hookCollision();
-            rodCatching();
-            catchFish();
+            suckOil();
             break;
     }
 }
 
 function hookCollision(){
-    hookX = constrain(rod.hook.x,350,600);
-    if (rod.hook.x>=600){
-        rod.hook.x=600;
-    } else if (rod.hook.x<=350){
-        rod.hook.x=350;
+    hookX = constrain(rod.hook.x,0,1000);
+    if (rod.hook.x>=1000){
+        rod.hook.x=1000;
+    } else if (rod.hook.x<=0){
+        rod.hook.x=0;
     }
-    hookY = constrain(rod.hook.y,300,900);
+    hookY = constrain(rod.hook.y,300,1000);
     if (rod.hook.y<=300){
         rod.hook.y=300;
-    } else if (rod.hook.y>=900){
+    } else if (rod.hook.y>=1000){
         rodUnspooling=false;
-        rod.hook.y=900;
+        rod.hook.y=1000;
     }
 }
 
@@ -219,60 +187,44 @@ function moveFish() {
 
 //pushes new fish to array, up to a limit of the current scarcity level. randomizes speed, size and side.
 function pushFish() {
-    for (let i = 0; i <=scarcity; i++) {
-        fishies.push(new fish(random(1,2.5),random(15,30),10));
+    for (let i = 0; i <=700; i++) {
+        fishies.push(new fish(random(1,2.5),random(15,50),10));
     }
-    for (let i = 0; i <=scarcity; i++) {
-        fishies2.push(new fish2(random(1,2.5),random(15,30),10+fish2.size*.5));
+    for (let i = 0; i <=700; i++) {
+        fishies2.push(new fish2(random(1,2.5),random(15,50),10+fish2.size*.5));
     }
 }
 
 //resets fish location after being reeled and spawns a new one, so long as there is enough time and scarcity space
 function resetFish(fish) {
     fish.x = 0;
-    fish.y = random(370, 840);
+    fish.y = random(370, 970);
 }
 
 //resets fish2 location after being reeled and spawns a new one, so long as there is enough time and scarcity space
 function resetFish2(fish2) {
     fish2.x = 1000;
-    fish2.y = random(340, 840);
+    fish2.y = random(340,970);
 }
 
 //draws fish, randomized textures.
 function drawFish() {
     fishies.forEach(fish => {
         push();
-        noStroke();
-        if (fish.size>20&&fish.size<25){
-            image(fishOne,fish.x,fish.y);
-        }   else if (fish.size>25){
-            image(fishTwo,fish.x,fish.y);
-        }   else {
-            image(fishThree,fish.x,fish.y);
-        }
+        strokeWeight(1);
+        stroke(random(0,255),random(0,255),random(0,255));
+        fill('black');
+        ellipse(fish.x,fish.y,fish.size);
         pop();
     })
     fishies2.forEach(fish2 => {
         push();
-        noStroke();
-        if (fish2.size>20&&fish2.size<25){
-            image(fishOne2,fish2.x,fish2.y);
-        }   else if (fish2.size>25){
-            image(fishTwo2,fish2.x,fish2.y);
-        }   else {
-            image(fishThree2,fish2.x,fish2.y);
-        }
+        strokeWeight(1);
+        stroke(random(0,255),random(0,255),random(0,255));
+        fill('black');
+        ellipse(fish2.x,fish2.y,fish2.size);
         pop();
     })
-    /* for when i add assets, circles for now
-    foreach pushFish(fish)
-    if (random number) = 1
-        img(asset,size)
-    else if = 2
-        img(asset,size)
-    else if = 3 etc etc
-    */
 }
 
 /*
@@ -285,7 +237,7 @@ function drawRod(){
     strokeWeight(10);
     stroke('#964B00');
     line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
-    strokeWeight(5);
+    strokeWeight(8);
     stroke("#000000");
     line(rod.shaft.x2,rod.shaft.y2,hookX,hookY);
     fill("#ff0000");
@@ -312,30 +264,47 @@ function drawRodReel(){
     pop();
 }
 function rodFunctions() {
-    if (rodUnspooling===true){
-        rod.hook.y += 10;
-        hookMoving +=10;
-    } else {
-        hookMoving = 0;
-    }
-    if (keyIsDown(RIGHT_ARROW)) {
-        rod.hook.x +=3;
-        hookMoving +=10;
-    }   else {
-            hookMoving = 0;
-    }
-    if (keyIsDown(LEFT_ARROW)) {
-        rod.hook.x -=3;
-        hookMoving +=10;
-    }   else {
-            hookMoving = 0;
-    }
-    if (keyIsDown(82) || keyIsDown(UP_ARROW)&&rodUnspooling===false){
-        rod.hook.y = rod.hook.y -3;
-        hookMoving +=10;
-    }   else {
-            hookMoving = 0;
-    }
+    if (keyIsDown(87||UP_ARROW)){
+        rod.hook.y -= 5;
+    } 
+
+    if (keyIsDown(83||DOWN_ARROW)){
+        rod.hook.y  += 5;
+    } 
+
+    if (keyIsDown(65||LEFT_ARROW)){
+        rod.hook.x -= 5;
+    } 
+
+    if (keyIsDown(68||RIGHT_ARROW)){
+        rod.hook.x += 5;
+    } 
+}
+
+function suckOil(){
+    suckSize = 40+constrain((munnee/500),0,300);
+    fishies.forEach(fish => {
+        // Get distance from hook to fish
+        const d = dist(rod.hook.x, rod.hook.y, fish.x, fish.y);
+        // Check if it's an overlap
+        const sucked = (d < suckSize);
+        if (sucked) {
+            // Reset the fish
+            munnee += 5;
+            resetFish(fish);
+        }
+    })
+    fishies2.forEach(fish2 => {
+        // Get distance from hook to fish
+        const d2 = dist(rod.hook.x, rod.hook.y, fish2.x, fish2.y);
+        // Check if it's an overlap
+        const sucked = (d2 < suckSize);
+        if (sucked) {
+            // Reset the fish
+            munnee += 5;
+            resetFish2(fish2);
+        }
+    })
 }
     /*
     moves hook and end of line X based on arrow keys. left/right
@@ -346,120 +315,6 @@ function rodFunctions() {
     when fish is hooked, also change rod.shaft.fishHooked to secondary postion and make it shake a little bit.
     */
 
-function rodCatching(){
-    rodUnspooling=true;
-    if (rodUnspooling===true){
-        rod.hook.y += 5;
-    }
-}
-
-function catchingFish(){
-    let randumbCatch = 0;
-    randumbCatch = random(0,500);
-    fishies.forEach(fish=>{
-        const d = dist(rod.hook.x, rod.hook.y, fish.x, fish.y);
-        fish.radius=fish.size*3
-        const caught = (d<fish.radius);
-
-        if (caught&&hookMoving===0&&rodUnspooling===false){
-            if(randumbCatch<2){
-                resetFish(fish);
-                fish.x = rod.hook.x;
-                fish.y = rod.hook.y;
-                gameState='reelin';
-            }
-        }
-        if (rod.hook.y<270){
-            gameState = 'fishin';
-        }
-    })
-    fishies2.forEach(fish2=>{
-        const d2 = dist(rod.hook.x, rod.hook.y, fish2.x, fish2.y);
-        fish2.radius=fish2.size*3
-        const caught2 = (d2<fish2.radius);
-
-        if (caught2&&hookMoving===0&&rodUnspooling===false){
-            if(randumbCatch<2){
-                resetFish2(fish2);
-                fish2.x = rod.hook.x;
-                fish2.y = rod.hook.y;
-                gameState='reelin';
-            }
-        }
-        if (rod.hook.y<270){
-            gameState = 'fishin';
-        }
-    })
-}
-
-//checks if hook overlaps fish.radius, and make random checks until fish bites.
-function catchFish() { 
-    //when fish bites: rod.hook.hooked = true
-    fishies.forEach(fish=>{
-        fish.value = round((10 +fish.size*.5),2);
-        if (rod.hook.y>900){
-                rodUnspooling=false;
-                rod.hook.y = 350;
-                gameState = 'fishin';
-                resetFish(fish);
-            }
-        if (rod.hook.y<350){
-            rodUnspooling=false;
-            munnee=munnee+fish.value;
-            rod.hook.y = 350;
-            gameState = 'fishin';
-        }
-        if (fishCaught===true){
-            munnee = munnee + fish2.value;
-            money.play();
-        }
-    }) 
-    fishies2.forEach(fish2=>{
-        fish2.value = round((10 +fish2.size*.5),2);
-        if (rod.hook.y>900){
-                rodUnspooling=false;
-                rod.hook.y = 350;
-                gameState = 'fishin';
-                resetFish2(fish2);
-                munnee = munnee - fish2.value;
-                fishCaught = false;
-        }
-
-        if (rod.hook.y<350){
-            fishCaught = true;
-            rodUnspooling=false;
-            munnee=munnee+fish2.value;
-            rod.hook.y = 350;
-            gameState = 'fishin';
-        }
-        if (fishCaught===true){
-            munnee = munnee + fish2.value;
-            money.play();
-        }
-    }) 
-}   
-
-/*
-//sells fish and moves on to next day, resetting gameState
-cashFish() {
-    if E key pressed to sell all fish, 
-        sells fish at current market rate.
-}
-*/
-
-/** for stats and upgrades function, work on after initial project is working and assets are solidified.
-buyUpgrades()
-shows upgrades 1 2 and 3, randomized from upgrades.json
-can be basic to premium in rarity and include reel strength, reel speed and 
-/fisherman stats
-let stats = {
-all values start at 1, as they are multipliers 
-speed = speed at which reel in and unspool happens
-strength = strength of mash when fish is hooked. like webfishing
-value = multiplier or flat increase? to fish value
-bait = makes fish more likely to bite the higher the stat is
-}
-*/
 
 
 

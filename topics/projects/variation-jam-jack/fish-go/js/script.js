@@ -265,14 +265,6 @@ function drawFish() {
         }
         pop();
     })
-    /* for when i add assets, circles for now
-    foreach pushFish(fish)
-    if (random number) = 1
-        img(asset,size)
-    else if = 2
-        img(asset,size)
-    else if = 3 etc etc
-    */
 }
 
 /*
