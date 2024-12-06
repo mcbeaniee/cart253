@@ -2,9 +2,14 @@
 
 Jack McDonald
 
-[View this project online](https://mcbeaniee.github.io/cart253/topics/variation-jam-jack/)
+[View this project online](https://mcbeaniee.github.io/cart253/topics/projects/variation-jam-jack/go-fish-go)
 
 ## Description
+Now you are the fish! You're alwasys hungry, and you will starve if you don't eat.
+be careful though, not all of that food is safe to bite, the VILLAINOUS FISH is trying to fish you up!
+also, please don't run into bombs, you will get seriously hurt.
+
+controls are on screen.
 
 Three games that are loosely fish-themed!
     - FISH OIL CLEANUP! (pretty self explanatory)

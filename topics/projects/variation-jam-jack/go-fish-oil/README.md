@@ -2,9 +2,12 @@
 
 Jack McDonald
 
-[View this project online](https://mcbeaniee.github.io/cart253/topics/variation-jam-jack/)
+[View this project online](https://mcbeaniee.github.io/cart253/topics/projects/variation-jam-jack/go-fish-oil)
 
 ## Description
+gigantic oil spill on FISH GO SEA!
+Suck up the oil to gain score and make your oil vaccuum even suckier! 
+controls are on screen.
 
 Three games that are loosely fish-themed!
     - Fish, a simple fishing game.
