@@ -44,6 +44,8 @@ let gameState = 'playing';
 let playerX;
 let playerY;
 let randomVariant;
+let rodUnspooling = true;
+let endFrame;
 
 //smaller and safer but less appetizing food
 class smallFood{
@@ -82,7 +84,7 @@ const villainFish = {
     },
     //bro dont call it that :( (i'm still calling it that)
     shaft:   {
-        x1: 700, //villainfish asset location 
+        x1: 750, //villainfish asset location 
         x2: 500, //hook location 
         y1: 170,//villainfish asset location
         y2: 100,//above hook, goes down when bait is eaten
@@ -118,6 +120,33 @@ function mousePressed(){
     }
 }
 
+function keyPressed(){
+    if (gameState==='gameOver'||gameState==='gameOver2'){
+        if(keyCode===32){
+            foods = []
+            smallFoods = []
+            pushFoods();
+            gameState='playing';
+            resetFood(food);
+            resetSmallFood(smallFood);
+            playerFish.x = 700;
+            playerFish.y = 600;
+            
+            foods.forEach(food =>{
+                food.y = random(340, 900);
+                food.x = random(0, 900);
+            })
+            smallFoods.forEach(smallFood =>{
+                smallFood.y = random(340, 900);
+                smallFood.x = random(0, 900);
+            })
+            playerFish.health=500;
+            villainFish.hook.y=300;
+            
+        }
+    }
+}
+
 function draw(){
     textFont(VCR);
     switch(gameState){
@@ -125,8 +154,29 @@ function draw(){
             gameplay();
             break;
         case 'gameOver':
+            image(endFrame,0,0);
+            drawPlayer();
+            drawRod();
+            fill('yellow');
+            textSize(100);
+            text('GAME OVER',250,500);
+            textSize(40);
+            text('You starved to death!',265,600);
+            textSize(70);
+            text('SPACE to restart',210,700);
             break;
         case 'gameOver2':
+            image(endFrame,0,0);
+            villainFishFunctions();
+            drawPlayer();
+            drawRod();
+            fill('yellow');
+            textSize(100);
+            text('GAME OVER',250,500);
+            textSize(40);
+            text('You got caught!',335,600);
+            textSize(70);
+            text('SPACE to restart',210,700);
             break;
     }
 }
@@ -140,7 +190,7 @@ function gameplay(){
     moveFoods();
     drawPlayer();
     playerFunctions();
-    //drawRod();
+    drawRod();
 }
 
 function pushFoods(){
@@ -257,6 +307,7 @@ function playerFunctions(){
             fill('#00ff00');
             rect(252,900,playerFish.health,50);
             if (playerFish.health<0){
+                endFrame = get();
                 gameState = 'gameOver';
             }
 
@@ -268,7 +319,9 @@ function playerFunctions(){
                 const eaten = (d < 40);
                 if (eaten) {
                     if (food.variant>15&&food.variant<25){
+                        endFrame = get();
                         gameState = 'gameOver2';
+                        rodUnspooling===true;
                     }   else if (food.variant>25){
                         playerFish.health = playerFish.health + 200
                         resetFood(food);
@@ -294,9 +347,6 @@ function playerFunctions(){
     }
 }
 
-
-
-/*
 function drawRod(){
     push();
     stroke('#000000')
@@ -304,16 +354,16 @@ function drawRod(){
     strokeWeight(10);
     stroke('#964B00');
     line(villainFish.shaft.x1,villainFish.shaft.y1,villainFish.shaft.x2,villainFish.shaft.y2);
-    strokeWeight(5);
-    stroke("#000000");
-    line(villainFish.shaft.x2,villainFish.shaft.y2,hookX,hookY);
+    strokeWeight(1);
+    stroke("#ffffff");
+    line(villainFish.shaft.x2,villainFish.shaft.y2,playerX,villainFish.hook.y);
     fill("#ff0000");
     stroke('#ffffff');
     strokeWeight(1);
-    image(hookd,hookX-63,hookY);
+    image(hookd,playerX-63,villainFish.hook.y);
     pop();
 }
-*/
+
 
 //draws player and player healthbar
 function drawPlayer(){
@@ -330,8 +380,12 @@ function drawPlayer(){
 function villainFishFunctions(){
     switch(gameState){
         case 'playing':
+                villainFish.hook.y = 300;
             break;
-        case 'gameOver':
+        case 'gameOver2':
+            if (villainFish.hook.y<playerFish.y){
+                villainFish.hook.y +=5;
+            } 
             break;
     }
 }
