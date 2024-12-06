@@ -10,33 +10,27 @@
 //GO FISH GO minigame, or variation 1
 
 //image lets
+let playerSprite;
 let main;
-let fishOne;
-let fishOne2;
-let fishTwo;
-let fishTwo2;
-let fishThree;
-let fishThree2;
 let hookd;
 let hooker;
 let VCR;
-let money;
-let playerSprite;
+let foody;
+let fakeFoody;
+let smallFoody;
+let bomb;
 
 //preload function
 function preload(){
     main = loadImage("assets/images/mainscene.gif")
-    fishOne = loadImage("assets/images/1fish.gif")
-    fishTwo = loadImage("assets/images/2fish.gif")
-    fishThree = loadImage("assets/images/3fish.gif")
-    fishOne2 = loadImage("assets/images/1fish2.gif")
-    fishTwo2 = loadImage("assets/images/2fish2.gif")
-    fishThree2 = loadImage("assets/images/3fish2.gif")
     hookd = loadImage("assets/images/hookstatic.png")
     hooker = loadImage("assets/images/fishhooked.gif")
     VCR = loadFont('assets/VCR_OSD_MONO_1.001.ttf')
-    money = loadSound('assets/sounds/money.mp3')
     playerSprite = loadImage('assets/images/playerFish.gif')
+    foody = loadImage('assets/images/realfood.gif')
+    fakeFoody = loadImage('assets/images/fakefood.gif')
+    smallFoody = loadImage('assets/images/smallfood.gif')
+    bomb = loadImage('assets/images/bomb.gif')
 }
 
 //variables
@@ -73,9 +67,9 @@ const playerFish = {
     x: 700, //controlled with movement keys, constrained to screen by playerX variable
     y: 600, //controlled with movement keys, constrained to screen by playerY variable
     health: 500, //slowly drains and needs food to refill
-    dashDistance: 250 //dash distance, slowly charges up to full and charges faster when health is low. allows a dash proportional to that distance towwards the mouse pointer
 }
 
+//evil fish taht kills you
 const villainFish = {
     hook: {
         x: 500, //follows player position
@@ -88,12 +82,10 @@ const villainFish = {
         x2: 500, //hook location 
         y1: 170,//villainfish asset location
         y2: 100,//above hook, goes down when bait is eaten
-    },
-    fish: {
-        quips: undefined //linked to json file with quips that he says randomly
     }
 }
 
+//food arrays
 let foods = []
 let smallFoods = []
 
@@ -114,12 +106,7 @@ function setup() {
     })
 }
 
-function mousePressed(){
-    if (gameState==='playing'){
-        playerFish.x = constrain(mouseX,0,playerFish.dashDistance);
-    }
-}
-
+//handles space to restart game
 function keyPressed(){
     if (gameState==='gameOver'||gameState==='gameOver2'){
         if(keyCode===32){
@@ -147,6 +134,7 @@ function keyPressed(){
     }
 }
 
+//draws canvas/game based on current game state
 function draw(){
     textFont(VCR);
     switch(gameState){
@@ -181,6 +169,7 @@ function draw(){
     }
 }
 
+//core gameplay functions
 function gameplay(){
     image(main,0,0);
     playerCollision();
@@ -193,6 +182,7 @@ function gameplay(){
     drawRod();
 }
 
+//push new foods into the array at game start
 function pushFoods(){
     for (let i = 0; i <=5; i++) {
         foods.push(new food(random(1,2.5),random(10,30)));
@@ -203,6 +193,7 @@ function pushFoods(){
     
 }
 
+//reset food when it gets to the end of the canvas
 function resetFood(food){
     food.x = -50;
     food.y = random(370, 800);
@@ -213,35 +204,32 @@ function resetSmallFood(smallFood){
     smallFood.y = random(370, 800);
 }
 
+//draws foods based on their randomized variations
 function drawFoods(){
     foods.forEach(food => {
         push();
         noStroke();
         if (food.variant>15&&food.variant<25){
-            noStroke();
-            fill("#a1a103");
-            ellipse(food.x,food.y,28);
+            //ellipse(food.x,food.y,28);
+            image(fakeFoody,food.x-50,food.y-65);
         }   else if (food.variant>25){
-            noStroke();
-            fill('yellow');
-            ellipse(food.x,food.y,30);
+            image(foody,food.x-50,food.y-65);
+            //ellipse(food.x,food.y,30);
         }   else {
-            noStroke();
-            fill('black');
-            ellipse(food.x,food.y,70);
+            //ellipse(food.x,food.y,70);
+            image(bomb,food.x-65,food.y-75);
         }
         pop();
     })
     smallFoods.forEach(smallFood => {
         push();
-        noStroke();
-        fill('yellow');
-        ellipse(smallFood.x,smallFood.y,10);
+        //ellipse(smallFood.x,smallFood.y,10);
+        image(smallFoody,smallFood.x-50,smallFood.y-65);
         pop();
     })
 }
 
-//add fish speed to fish x. functionally identical to moveFly()
+//add food speed to food x. functionally identical to moveFly()
 function moveFoods() {
     console.log(randomVariant);
     foods.forEach(food => {
@@ -331,6 +319,7 @@ function playerFunctions(){
                     }
                 }
             })
+            //gives small amount of health for small food, safer but lower
             smallFoods.forEach(smallFood => {
                 // Get distance from tongue to food
                 const d2 = dist(playerFish.x, playerFish.y, smallFood.x, smallFood.y);
@@ -347,6 +336,7 @@ function playerFunctions(){
     }
 }
 
+//draws the evil fish's rod
 function drawRod(){
     push();
     stroke('#000000')

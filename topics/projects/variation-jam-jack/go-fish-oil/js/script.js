@@ -8,43 +8,23 @@
 "use strict";
 
 //FISH minigame, base for variations
+
+//asset/image lets and preload function
 let main;
-let fishOne;
-let fishOne2;
-let fishTwo;
-let fishTwo2;
-let fishThree;
-let fishThree2;
 let hookd;
-let hooker;
 let VCR;
-let money;
 
 function preload(){
     main = loadImage("assets/images/mainscene.gif")
-    fishOne = loadImage("assets/images/1fish.gif")
-    fishTwo = loadImage("assets/images/2fish.gif")
-    fishThree = loadImage("assets/images/3fish.gif")
-    fishOne2 = loadImage("assets/images/1fish2.gif")
-    fishTwo2 = loadImage("assets/images/2fish2.gif")
-    fishThree2 = loadImage("assets/images/3fish2.gif")
-    hookd = loadImage("assets/images/hookstatic.png")
-    hooker = loadImage("assets/images/fishhooked.gif")
+    hookd = loadImage("assets/images/hookstatic.gif")
     VCR = loadFont('assets/VCR_OSD_MONO_1.001.ttf')
-    money = loadSound('assets/sounds/money.mp3')
 }
-let scarcity = 3; //(determines how many fish will be in the water, increases with overfishing, resets when fish are sold)
-let gameState = 'fishin';
-let rodUnspooling = false;
-let hookMoving = 0;
+
+//variables
 let hookX;
 let hookY;
 let munnee = 0;
 let suckSize;
-
-let fishCaught = false;
-
-let endFrame;
 
 //rod object, contains hook, line and sink- i mean shaft
 const rod = {
@@ -112,29 +92,16 @@ function setup() {
         fish2.x = random(0, 900)
     })
 }
-function mousePressed(){
-    if (gameState==='reelin'){
-        rod.hook.y = rod.hook.y -100
-    }
-}
-
 //draws assets and objects, as well as pushes array
 function draw() {
     textFont(VCR);
-    switch(gameState){
-        /*shop is a non-essential. can work but need to establish basics first
-        case 'shop':
-            shop assets 
-            buyUpgrades()
-            break;
-            */
-        case 'fishin':
             fishCaught=false;
             background('#87CEEB');
             hookCollision();
             push();
             image(main,0,0);
-            fill('#ffff00');
+            fill('#000000');
+            stroke(random(0,255),random(0,255),random(0,255));
             textSize(30);
             text('Score ' + round(munnee,2),820,100);
             rod.shaft.y2=100;
@@ -146,10 +113,9 @@ function draw() {
             drawRod();
             rodFunctions();
             suckOil();
-            break;
-    }
 }
 
+//collision of hook with walls of canvas
 function hookCollision(){
     hookX = constrain(rod.hook.x,0,1000);
     if (rod.hook.x>=1000){
@@ -232,35 +198,11 @@ code for drawing, moving, and controlling rod.hook and rod.line parameters
 */
 function drawRod(){
     push();
-    stroke('#000000')
-    strokeWeight(1);
-    strokeWeight(10);
-    stroke('#964B00');
-    line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
-    strokeWeight(8);
+    strokeWeight(20);
     stroke("#000000");
-    line(rod.shaft.x2,rod.shaft.y2,hookX,hookY);
-    fill("#ff0000");
-    stroke('#ffffff');
+    line(rod.shaft.x1,rod.shaft.y1,hookX,hookY);
     strokeWeight(1);
     image(hookd,hookX-63,hookY);
-    pop();
-}
-
-function drawRodReel(){
-    push();
-    stroke('#000000')
-    strokeWeight(1);
-    strokeWeight(10);
-    stroke('#964B00');
-    line(rod.shaft.x1,rod.shaft.y1,rod.shaft.x2,rod.shaft.y2);
-    strokeWeight(5);
-    stroke("#000000");
-    line(rod.shaft.x2,rod.shaft.y2,hookX,hookY);
-    fill("#ff0000");
-    stroke('#ffffff');
-    strokeWeight(1);
-    image(hooker,hookX-63,hookY);
     pop();
 }
 function rodFunctions() {
@@ -281,6 +223,7 @@ function rodFunctions() {
     } 
 }
 
+//sucks up oil and increases suckiness based on score
 function suckOil(){
     suckSize = 40+constrain((munnee/500),0,300);
     fishies.forEach(fish => {
@@ -306,16 +249,4 @@ function suckOil(){
         }
     })
 }
-    /*
-    moves hook and end of line X based on arrow keys. left/right
-    moves hook and end of line Y down when button F is pressed (at  a constant rate) press F again to reeling down. plays unspool sound loop
-    moves hook and end of line Y up at a rate determined by current reel in speed, when button R is held: when no fish is on th line and MASHED: when rod.hook.hooked = true. (reel) plays reeling in sound loop
-    
-    slowly moves rod down when fish is on the line (rod.hook.hooked = true) at a rate proportional to fish.size and fish.speed. 
-    when fish is hooked, also change rod.shaft.fishHooked to secondary postion and make it shake a little bit.
-    */
-
-
-
-
 
